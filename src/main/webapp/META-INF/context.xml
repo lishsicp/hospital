@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Contex>
+    <Resource name="jdbc/hospital"
+                global="jdbc/hospital"
+                factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+                auth="Container"
+                type="javax.sql.DataSource"
+                username="root"
+                password="pswrd"
+                driverClassName="com.mysql.cj.jdbc.Driver"
+                description="MySQL database parameters."
+                url="jdbc:mysql://localhost:3306/hospital"
+                maxTotal="10"
+                maxIdle="10"
+                minIdle="10"
+                maxWaitMillis="10000"
+                removeAbandonedTimeout="300"
+                defaultAutoCommit="true" />
+</Contex>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- dont forget to add logger == LogClass -->
