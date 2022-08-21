@@ -6,11 +6,8 @@ import com.yaroslav.lobur.model.dao.GenericDao;
 import com.yaroslav.lobur.model.dao.PatientDao;
 import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.Patient;
-import com.yaroslav.lobur.model.entity.User;
-import com.yaroslav.lobur.model.entity.enums.Gender;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
@@ -18,13 +15,23 @@ import java.util.Map;
 
 public class MySqlPatientDao extends GenericDao<Patient> implements PatientDao {
 
-    public MySqlPatientDao(DataSource ds) {
-        super(ds);
+    private static MySqlPatientDao instance;
+
+    public static PatientDao getInstance() {
+        if (instance == null) {
+            instance = new MySqlPatientDao();
+        }
+        return instance;
     }
+
+    private MySqlPatientDao(){}
+
 
     private static final String INSERT_TEMPLATE = "INSERT INTO hospital.patient\n" +
             "(status, doctor_id, firstname, lastname, date_of_birth, gender, email)" +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+    public static final String UPDATE_TEMPLATE = "UPDATE patient SET  status = ?, doctor_id = ?, firstname = ?, lastname = ?, date_of_birth = ?, gender = ?, email = ? WHERE id =";
 
     @Override
     protected Patient mapToEntity(ResultSet rs) throws SQLException {
@@ -46,9 +53,8 @@ public class MySqlPatientDao extends GenericDao<Patient> implements PatientDao {
     }
 
     @Override
-    public void checkUniqueEmail(Patient patient) {
-        try (Connection connection = ds.getConnection();
-             PreparedStatement ps = connection.prepareStatement("SELECT count(id) FROM patient WHERE email = ? AND id != ?")) {
+    public void checkUniqueEmail(Connection connection, Patient patient) {
+        try (PreparedStatement ps = connection.prepareStatement("SELECT count(id) FROM patient WHERE email = ? AND id != ?")) {
             ps.setString(1, patient.getEmail());
             ps.setLong(2, patient.getId());
             ResultSet rs = ps.executeQuery();
@@ -81,32 +87,41 @@ public class MySqlPatientDao extends GenericDao<Patient> implements PatientDao {
     }
 
     @Override
-    public Patient findPatientById(long id) {
-        return findEntity(getConnection(), "SELECT * FROM patient WHERE id =" + id);
+    public Patient findPatientById(Connection connection, long id) {
+        return findEntity(connection, "SELECT * FROM patient WHERE id = ?", id);
     }
 
-    public List<Patient> findAllPatients() {
-        return findAll(getConnection(), "SELECT * FROM patient");
-    }
-
-    @Override
-    public List<Patient> findPatientsWithoutDoctor() {
-        return findEntities(getConnection(), "SELECT * FROM patient WHERE doctor_id != NULL");
+    public List<Patient> findAllPatients(Connection connection) {
+        return findAll(connection, "SELECT * FROM patient");
     }
 
     @Override
-    public List<Patient> findPatientsWithDoctor() {
-        return findEntities(getConnection(), "SELECT * FROM patient WHERE doctor_id = NULL");
+    public List<Patient> findPatientsWithoutDoctor(Connection connection) {
+        return findEntities(connection, "SELECT * FROM patient WHERE doctor_id != NULL");
     }
 
     @Override
-    public List<Patient> findPatientsOrderBy(OrderBy order) {
+    public List<Patient> findPatientsWithDoctor(Connection connection) {
+        return findEntities(connection, "SELECT * FROM patient WHERE doctor_id = NULL");
+    }
+
+    @Override
+    public List<Patient> findPatientsOrderBy(Connection connection, OrderBy order) {
         String query = "SELECT * FROM patient";
-        return findAll(getConnection(), query + " ORDER BY " + order.getField());
+        return findAll(connection, query + " ORDER BY " + order.getField());
     }
 
-    public void insertPatient(Patient patient) {
-        insertEntity(getConnection(), INSERT_TEMPLATE, patient);
+    public void insertPatient(Connection connection, Patient patient) {
+        insertEntity(connection, INSERT_TEMPLATE, patient);
+    }
+
+    public void deletePatient(Connection connection, long id) {
+        deleteEntity(connection, "DELETE FROM patient WHERE id=" + id);
+    }
+
+    @Override
+    public void updatePatient(Connection connection, Patient patient) {
+        updateEntity(connection, UPDATE_TEMPLATE + patient.getId(), patient);
     }
 
 }

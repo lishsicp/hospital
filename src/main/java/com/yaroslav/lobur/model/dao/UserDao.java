@@ -3,21 +3,22 @@ package com.yaroslav.lobur.model.dao;
 import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.model.entity.enums.Role;
 
+import java.sql.Connection;
 import java.util.List;
 
 public interface UserDao {
-    List<User> findAllUsers();
-    List<User> findAllByRole(Role role);
-    User findUserById(Long id);
+    List<User> findAllUsers(Connection connection);
+    List<User> findAllByRole(Connection connection, Role role);
+    User findUserById(Connection connection, Long id);
 
-    User findUserByEmail(String email);
-    void updateUser(User user);
-    void deleteUser(long id);
-    long insertUser(User user);
+    User findUserByEmail(Connection connection, String email);
+    void updateUser(Connection connection, User user);
+    void deleteUser(Connection connection, long id);
+    long insertUser(Connection connection, User user);
 
-    void updatePassword(User user);
+    void updatePassword(Connection connection, User user);
 
-    void checkUniqueFields(User user);
+    void checkUniqueFields(Connection connection, User user);
 }
 
 

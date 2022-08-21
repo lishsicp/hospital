@@ -10,7 +10,7 @@
         <param-value>jdbc/hospital</param-value>
     </context-param>
     <context-param>
-        <description>Relational database management systems parameter</description>
+        <description>Log4j Configuration xml file</description>
         <param-name>log4j-config</param-name>
         <param-value>WEB-INF/log4j.xml</param-value>
     </context-param>
@@ -26,6 +26,11 @@
     <error-page>
     	<error-code>404</error-code>
         <location>/error404.jsp</location>
+    </error-page>
+
+    <error-page>
+        <exception-type>com.yaroslav.lobur.exceptions.UnknownSqlException</exception-type>
+        <location>/dbError.jsp</location>
     </error-page>
 
     <resource-ref>

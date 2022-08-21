@@ -1,13 +1,14 @@
 package com.yaroslav.lobur.model.entity;
 
-import com.yaroslav.lobur.model.entity.enums.Gender;
 import com.yaroslav.lobur.model.entity.enums.Locale;
 import com.yaroslav.lobur.model.entity.enums.Role;
 
+import java.io.Serial;
 import java.util.Date;
 
 public class User implements Entity {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private long id;
@@ -22,7 +23,7 @@ public class User implements Entity {
 
     private Date dateOfBirth;
 
-    private Gender gender;
+    private String gender;
 
     private String email;
 
@@ -88,11 +89,11 @@ public class User implements Entity {
     }
 
 
-    public Gender getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(Gender gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 

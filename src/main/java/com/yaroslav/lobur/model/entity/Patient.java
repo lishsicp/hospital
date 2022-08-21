@@ -1,8 +1,5 @@
 package com.yaroslav.lobur.model.entity;
 
-
-import com.yaroslav.lobur.model.entity.enums.Gender;
-
 import java.util.Date;
 
 public class Patient implements Entity {

@@ -7,6 +7,18 @@ import java.util.*;
 
 public class UserValidator implements Validator<User> {
 
+    private static UserValidator instance;
+
+    private UserValidator() {
+    }
+
+    public static UserValidator getInstance() {
+        if (instance == null) {
+            instance = new UserValidator();
+        }
+        return instance;
+    }
+
     @Override
     public Map<String, String> validate(User entity) {
         Map<String, String> map = new HashMap<>();
@@ -16,13 +28,10 @@ public class UserValidator implements Validator<User> {
         if (entity.getPassword() == null || !entity.getPassword().matches(RegexpManager.getProperty("user.password.regexp"))) {
             map.put("psw", "validation.user.password");
         }
-        Validator.validateUserFields(map, entity.getFirstname(), entity.getLastname(), entity.getDateOfBirth(), entity.getGender().toString(), entity.getEmail());
+        Validator.validateUserFields(map, entity.getFirstname(), entity.getLastname(), entity.getDateOfBirth(), entity.getGender(), entity.getEmail());
         if (entity.getPhone() == null || !entity.getPhone().matches(RegexpManager.getProperty("user.phone.regexp"))) {
             map.put("phone", "validation.user.phone");
         }
-//        if (!entity.getAddress().isEmpty() && !entity.getAddress().isBlank()) {
-//            map.put("address", "validation.user.address");
-//        }
         return map;
     }
 }

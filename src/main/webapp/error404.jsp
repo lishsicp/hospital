@@ -1,10 +1,11 @@
-<%@ page contentType="text/html;charset=UTF-8" isErrorPage="true" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" isErrorPage="true"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<fmt:setLocale value="${language}" />
+<fmt:setLocale value="${sessionScope.language}" />
 <fmt:setBundle basename="message" />
 
-<html lang="${language}">
+<!DOCTYPE>
+<html lang="${sessionScope.language}">
 <head>
     <title><fmt:message key="error.404.title" /></title>
     <%@ include file="meta.jsp" %>

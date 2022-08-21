@@ -1,9 +1,7 @@
 package com.yaroslav.lobur.controller.command;
 
 import com.yaroslav.lobur.controller.command.impl.*;
-import com.yaroslav.lobur.controller.command.impl.admin.ListDoctorsCommand;
-import com.yaroslav.lobur.controller.command.impl.admin.ListPatientsCommand;
-import com.yaroslav.lobur.controller.command.impl.admin.AdminAddPatientCommand;
+import com.yaroslav.lobur.controller.command.impl.admin.*;
 import com.yaroslav.lobur.controller.command.impl.authentication.LogoutCommand;
 import com.yaroslav.lobur.controller.command.impl.authentication.UserSignInCommand;
 import com.yaroslav.lobur.controller.command.impl.authentication.UserSignUpCommand;
@@ -31,6 +29,9 @@ public class CommandHandler {
         commandMap.put("list_patients", new ListPatientsCommand());
         commandMap.put("list_doctors", new ListDoctorsCommand());
         commandMap.put("add_patient", new AdminAddPatientCommand());
+        commandMap.put("add_doctor", new AdminAddDoctorCommand());
+        commandMap.put("delete_patient", new DeletePatientCommand());
+        commandMap.put("edit_patient", new EditPatientCommand());
     }
 
     public static CommandHandler getInstance() {
@@ -48,7 +49,7 @@ public class CommandHandler {
 
     public Command defineCommand(HttpServletRequest req) {
         String action = req.getParameter("action");
-        logger.debug("Attempting to make an action: {}", action);
+        //logger.debug("Attempting to make an action: {}", action);
         if (action == null || action.isEmpty()) {
             logger.info("Empty or unknown command {} {}", req.getMethod(), req.getRequestURI());
             req.setAttribute("command", action);

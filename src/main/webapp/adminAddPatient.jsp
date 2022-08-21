@@ -72,10 +72,16 @@
                         </div>
                         <div class="col-md-12">
                             <div class="clearfix">
-                                <button type="submit" class="btn btn-primary"><fmt:message
+                                <button type="submit" class="btn btn-outline-dark"><fmt:message
                                         key="admin.patient.add.patient"/></button>
                             </div>
                         </div>
+                        <c:if test="${requestScope.success != null}">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <strong><fmt:message key="${sessionScope.success}" /></strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </c:if>
                     </div>
                 </form>
                 <c:if test="${sessionScope.userErrors != null}">
@@ -83,7 +89,8 @@
                         <c:forEach var="error" items="${sessionScope.userErrors}">
                             <script>
                                 var key = '${error.key}';
-                                var message = '<fmt:message key="${error.value}" bundle="${val}"/>';
+                                var message = "<fmt:message key="${error.value}" bundle="${val}"/>";
+                                console.log(key + " " + message);
                                 var input = document.getElementById(key);
                                 input.classList.add("is-invalid")
                                 input.parentElement.querySelector(".text-danger").innerHTML = message;

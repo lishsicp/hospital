@@ -4,7 +4,7 @@
 
 <%--<ctg:setLang/>--%>
 <%--<fmt:setLocale value="${sessionScope.current_user ne null ? sessionScope.current_user.locale : sessionScope.language}"/>--%>
-<fmt:setLocale value="${language}"/>
+<fmt:setLocale value="${sessionScope.language}"/>
 <fmt:setBundle basename="message"/>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">

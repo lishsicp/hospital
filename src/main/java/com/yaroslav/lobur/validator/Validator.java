@@ -1,8 +1,6 @@
 package com.yaroslav.lobur.validator;
 
 import com.yaroslav.lobur.model.entity.Entity;
-import com.yaroslav.lobur.model.entity.Patient;
-import com.yaroslav.lobur.model.entity.enums.Gender;
 import com.yaroslav.lobur.utils.RegexpManager;
 
 import java.util.Date;

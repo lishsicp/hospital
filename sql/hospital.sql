@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `hospital`.`user`
     `date_of_birth` DATE                             NOT NULL,
     `gender`        ENUM ('MALE', 'FEMALE', 'OTHER') NOT NULL,
     `email`         VARCHAR(45)                      NOT NULL,
-    `phone`         VARCHAR(15)                      NULL DEFAULT '',
+    `phone`         VARCHAR(15)                      NOT NULL,
     `address`       VARCHAR(200)                     NULL DEFAULT '',
     `locale`        ENUM ('UK', 'EN')                NOT NULL,
     `role_id`       TINYINT                          NOT NULL,
@@ -307,4 +307,4 @@ SELECT d.id,
        (SELECT count(id) FROM patient WHERE patient.doctor_id = d.id) as NumberOfPatients
 FROM doctor d
          JOIN category c ON d.category_id = c.id
-         JOIN user u ON u.id = d.user_id;
+         JOIN user u ON u.id = d.user_id ORDER BY lastname LIMIT 3, 5;

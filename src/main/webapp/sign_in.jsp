@@ -1,14 +1,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="ctg" uri="custom_tags" %>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%--<ctg:setLang />--%>
-<fmt:setLocale value="${language}" />
+<fmt:setLocale value="${sessionScope.language}" />
 <fmt:setBundle basename="message" />
 <fmt:setBundle basename="validation.validation" var="v" />
 
-
-<html lang="${language}">
+<!DOCTYPE>
+<html lang="${sessionScope.language}">
 <head>
     <c:import url="meta.jsp"/>
     <title><fmt:message key="signin.title" /></title>
@@ -22,7 +22,7 @@
         <div class="row g-3 justify-content-center align-content-center">
             <div class="col-md-12">
                 <div class="col-md-4">
-                    <c:set var="error" scope="page" value="${errors.contains('signin.error.email_not_found') ? 'is-invalid' : ''}" />
+                    <c:set var="error" scope="page" value="${sessionScope.errors.contains('signin.error.email_not_found') ? 'is-invalid' : ''}" />
                     <label class="col-sm-2 col-form-label" for="email"><strong><fmt:message key="signin.email" /></strong></label>
                     <input class="form-control ${error}}" type="email" placeholder="<fmt:message key="signin.email.placeholder" />" onclick="deleteInvalid(this)" name="email" id="email" required>
                     <div class="text-danger py-2 mx-1"></div>
@@ -30,7 +30,7 @@
             </div>
             <div class="col-md-12">
                 <div class="col-md-4">
-                    <c:set var="error" scope="page" value="${errors.contains('signin.error.wrong_password') ? 'is-invalid' : ''}" />
+                    <c:set var="error" scope="page" value="${sessionScope.errors.contains('signin.error.wrong_password') ? 'is-invalid' : ''}" />
                     <label class="form-label" for="psw"><strong><fmt:message key="signin.password"/></strong></label>
                     <input class="form-control ${error}" type="password" placeholder="<fmt:message key="signin.password.placeholder"/>"
                            name="psw" id="psw" onclick="deleteInvalid(this)" required>

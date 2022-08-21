@@ -1,7 +1,6 @@
 package com.yaroslav.lobur.utils.requestparsers;
 
 import com.yaroslav.lobur.model.entity.User;
-import com.yaroslav.lobur.model.entity.enums.Gender;
 import com.yaroslav.lobur.model.entity.enums.Locale;
 import com.yaroslav.lobur.model.entity.enums.Role;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +15,7 @@ public class UserRequestParser {
         user.setFirstname(request.getParameter("firstName"));
         user.setLastname(request.getParameter("lastName"));
         user.setDateOfBirth(Date.valueOf(request.getParameter("date_of_birth")));
-        user.setGender(Gender.valueOf(request.getParameter("gender")));
+        user.setGender(request.getParameter("gender"));
         user.setEmail(request.getParameter("email"));
         user.setPhone(request.getParameter("phone"));
         user.setLocale(Locale.UK);

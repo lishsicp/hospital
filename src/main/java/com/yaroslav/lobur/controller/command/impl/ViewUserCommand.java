@@ -20,6 +20,6 @@ public class ViewUserCommand implements Command {
         User user = userService.getUserById(id);
         session.setAttribute("viewUser", user);
         session.setAttribute("currentPage", page);
-        return new CommandResult(PagePathManager.getProperty("page.admin_main"));
+        return new CommandResult(page);
     }
 }

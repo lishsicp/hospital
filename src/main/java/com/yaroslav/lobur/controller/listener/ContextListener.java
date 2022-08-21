@@ -1,13 +1,6 @@
 package com.yaroslav.lobur.controller.listener;
 
-import com.yaroslav.lobur.model.dao.CategoryDao;
-import com.yaroslav.lobur.model.dao.DoctorDao;
-import com.yaroslav.lobur.model.dao.PatientDao;
-import com.yaroslav.lobur.model.dao.UserDao;
-import com.yaroslav.lobur.model.dao.impl.MySqlCategoryDao;
-import com.yaroslav.lobur.model.dao.impl.MySqlDoctorDao;
-import com.yaroslav.lobur.model.dao.impl.MySqlPatientDao;
-import com.yaroslav.lobur.model.dao.impl.MySqlUserDao;
+import com.yaroslav.lobur.model.dao.*;
 import com.yaroslav.lobur.service.DoctorService;
 import com.yaroslav.lobur.service.PatientService;
 import com.yaroslav.lobur.service.UserService;
@@ -60,15 +53,11 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
 
     public void initServices(ServletContext ctx) {
         DataSource dataSource = (DataSource) ctx.getAttribute(DATASOURCE_PARAM);
-        // DAO
-        UserDao userDao = new MySqlUserDao(dataSource);
-        PatientDao patientDao = new MySqlPatientDao(dataSource);
-        CategoryDao categoryDao = new MySqlCategoryDao(dataSource);
-        DoctorDao doctorDao = new MySqlDoctorDao(dataSource);
+        DaoFactory.init(dataSource);
         // SERVICE
-        UserService userService = new UserService(userDao);
-        PatientService patientService = new PatientService(patientDao);
-        DoctorService doctorService = new DoctorService(userDao, categoryDao, doctorDao);
+        UserService userService = new UserService();
+        PatientService patientService = new PatientService();
+        DoctorService doctorService = new DoctorService();
         // Attributes
         ctx.setAttribute("userService", userService);
         ctx.setAttribute("patientService", patientService);

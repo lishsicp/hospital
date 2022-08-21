@@ -4,24 +4,14 @@ import com.yaroslav.lobur.exceptions.*;
 import com.yaroslav.lobur.model.dao.GenericDao;
 import com.yaroslav.lobur.model.dao.UserDao;
 import com.yaroslav.lobur.model.entity.User;
-import com.yaroslav.lobur.model.entity.enums.Gender;
 import com.yaroslav.lobur.model.entity.enums.Role;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-
-import javax.sql.DataSource;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MySqlUserDao extends GenericDao<User> implements UserDao {
-
-    public MySqlUserDao(DataSource ds) {
-        super(ds);
-    }
 
     private static final String FIND_ALL_USERS = "SElECT * FROM hospital.user";
     private static final String INSERT_USER = "INSERT INTO hospital.user(`login`, `password`, `firstname`, `lastname`, `date_of_birth`, `gender`, `email`, `phone`, `address`, `locale`, `role_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -31,77 +21,60 @@ public class MySqlUserDao extends GenericDao<User> implements UserDao {
             "SELECT count(id) FROM user WHERE phone = ? AND id != ?";
     private static final String FIND_ALL_BY_ROLE = "SELECT * FROM user WHERE role_id = ?";
 
+    private static MySqlUserDao instance;
+
+    public static UserDao getInstance() {
+        if (instance == null) {
+            instance = new MySqlUserDao();
+        }
+        return instance;
+    }
+
+    private MySqlUserDao(){}
+
     @Override
-    public List<User> findAllUsers()  {
-        return findAll(getConnection(), FIND_ALL_USERS);
+    public List<User> findAllUsers(Connection connection)  {
+        return findAll(connection, FIND_ALL_USERS);
     }
 
     @Override
-    public List<User> findAllByRole(Role role) {
-        return findEntities(getConnection(), FIND_ALL_BY_ROLE, role.getRoleId());
+    public List<User> findAllByRole(Connection connection, Role role) {
+        return findEntities(connection, FIND_ALL_BY_ROLE, role.getRoleId());
     }
 
     @Override
-    public User findUserById(Long id) {
-        return findEntity(getConnection(), "SELECT * FROM user WHERE id = ?", id);
+    public User findUserById(Connection connection, Long id) {
+        return findEntity(connection, "SELECT * FROM user WHERE id = ?", id);
     }
 
     @Override
-    public User findUserByEmail(String email) {
-        return findEntity(getConnection(), FIND_USER_BY_EMAIL, email);
+    public User findUserByEmail(Connection connection, String email) {
+        return findEntity(connection, FIND_USER_BY_EMAIL, email);
     }
 
     @Override
-    public void updateUser(User user) {
-        updateByField(getConnection(), "", user, 6, user.getId());
+    public void updateUser(Connection connection, User user) {
+        updateByField(connection, "", user, 6, user.getId());
     }
 
     @Override
-    public void deleteUser(long id) {
-        deleteEntity(getConnection(), "DELETE FROM user WHERE id=" + id);
+    public void deleteUser(Connection connection, long id) {
+        deleteEntity(connection, "DELETE FROM user WHERE id=" + id);
     }
 
     @Override
-    public long insertUser(User user) {
-        return insertEntity(getConnection(), INSERT_USER, user);
-//        ResultSet resultSet = null;
-//        try(
-//            Connection con = ConnectionProvider.getInstance().getConnection();
-//            PreparedStatement ps = con.prepareStatement(INSERT_USER, Statement.RETURN_GENERATED_KEYS)) {
-//            TransactionManager.start();
-//            mapFromEntity(ps, user);
-//            if (ps.executeUpdate() > 0) {
-//                resultSet = ps.getGeneratedKeys();
-//                if (resultSet.next()) {
-//                    user.setId(resultSet.getLong(1));
-//                    logger.debug("User has been added: {}", user);
-//                    TransactionManager.commit();
-//                    return user.getId();
-//                }
-//            }
-//            throw new UnknownSqlException();
-//        } catch (SQLException e) {
-//            TransactionManager.rollback();
-//            logger.error("SQLException thrown when trying to insert a user {}", e.getMessage());
-//            throw new UnknownSqlException(e.getMessage());
-//        } finally {
-//            if (resultSet != null) {
-//                try {
-//                    resultSet.close();
-//                } catch (SQLException ignored) {}
-//            }
-//        }
+    public long insertUser(Connection connection, User user) {
+        return insertEntity(connection, INSERT_USER, user);
     }
 
     @Override
-    public void updatePassword(User user) {
-        return;
+    public void updatePassword(Connection connection, User user) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void checkUniqueFields(User user) {
-        try (Connection connection = ds.getConnection();
-            PreparedStatement ps = connection.prepareStatement(CHECK_UNIQUE_FIELDS)) {
+    public void checkUniqueFields(Connection con, User user) {
+        try (PreparedStatement ps = con.prepareStatement(CHECK_UNIQUE_FIELDS)) {
             ps.setString(1, user.getLogin());
             ps.setLong(2, user.getId());
             ps.setString(3, user.getEmail());
@@ -112,7 +85,6 @@ public class MySqlUserDao extends GenericDao<User> implements UserDao {
             Map<String, String> errors = new HashMap<>();
             rs.next();
             if (rs.getInt(1) > 0) {
-                //errors.put("login", "validation.user.login.exist");
                 errors.put("login", "validation.user.login.exist");
             }
             rs.next();
@@ -151,7 +123,7 @@ public class MySqlUserDao extends GenericDao<User> implements UserDao {
         user.setFirstname(firstname);
         user.setLastname(lastname);
         user.setDateOfBirth(dateOfBirth);
-        user.setGender(Gender.valueOf(gender));
+        user.setGender(gender);
         user.setEmail(email);
         user.setPhone(phone);
         user.setAddress(address);
@@ -166,7 +138,7 @@ public class MySqlUserDao extends GenericDao<User> implements UserDao {
         ps.setString(3, user.getFirstname());
         ps.setString(4, user.getLastname());
         ps.setDate(5, java.sql.Date.valueOf(user.getDateOfBirth().toString()));
-        ps.setString(6, user.getGender().name());
+        ps.setString(6, user.getGender());
         ps.setString(7, user.getEmail());
         ps.setString(8, user.getPhone());
         ps.setString(9, user.getAddress());

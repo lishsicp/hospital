@@ -4,7 +4,7 @@ import com.yaroslav.lobur.model.dao.CategoryDao;
 import com.yaroslav.lobur.model.dao.GenericDao;
 import com.yaroslav.lobur.model.entity.Category;
 
-import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,9 +12,16 @@ import java.util.List;
 
 public class MySqlCategoryDao extends GenericDao<Category> implements CategoryDao {
 
-    public MySqlCategoryDao(DataSource ds) {
-        super(ds);
+    private static MySqlCategoryDao instance;
+
+    public static MySqlCategoryDao getInstance() {
+        if (instance == null) {
+            instance = new MySqlCategoryDao();
+        }
+        return instance;
     }
+
+    private MySqlCategoryDao(){}
 
     @Override
     protected Category mapToEntity(ResultSet rs) throws SQLException {
@@ -30,12 +37,12 @@ public class MySqlCategoryDao extends GenericDao<Category> implements CategoryDa
         ps.setString(2, category.getName());
     }
 
-    public List<Category> findAllCategories() {
-        return findAll(getConnection(), "SELECT * FROM category");
+    public List<Category> findAllCategories(Connection connection) {
+        return findAll(connection, "SELECT * FROM category");
     }
 
-    public Category findCategoryById(long id) {
-        return findEntity(getConnection(), "SELECT * FROM category WHERE id=?", id);
+    public Category findCategoryById(Connection connection, long id) {
+        return findEntity(connection, "SELECT * FROM category WHERE id=?", id);
     }
 
 }

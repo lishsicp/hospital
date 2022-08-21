@@ -2,8 +2,6 @@ package com.yaroslav.lobur.controller.command.impl.authentication;
 
 import com.yaroslav.lobur.controller.command.Command;
 import com.yaroslav.lobur.exceptions.DBExceptionMessages;
-import com.yaroslav.lobur.exceptions.UnknownSqlException;
-import com.yaroslav.lobur.model.dao.UserDao;
 import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.service.UserService;
 import com.yaroslav.lobur.utils.CommandResult;
@@ -27,7 +25,7 @@ public class UserSignUpCommand implements Command {
         String page = PagePathManager.getProperty("page.sign_up");
         session.setAttribute("currentPage", page);
         User user = UserRequestParser.parseUser(request);
-        Map<String, String> errors = new UserValidator().validate(user);
+        Map<String, String> errors = UserValidator.getInstance().validate(user);
         String repeatPsw = request.getParameter("psw-repeat");
         if (!user.getPassword().equals(repeatPsw)) {
             errors.put("psw-repeat", "validation.user.password_retype");

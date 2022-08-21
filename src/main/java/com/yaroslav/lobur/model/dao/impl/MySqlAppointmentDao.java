@@ -4,16 +4,22 @@ import com.yaroslav.lobur.model.dao.AppointmentDao;
 import com.yaroslav.lobur.model.dao.GenericDao;
 import com.yaroslav.lobur.model.entity.Appointment;
 
-import javax.sql.DataSource;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class MySqlAppointmentDao extends GenericDao<Appointment> implements AppointmentDao {
 
-    protected MySqlAppointmentDao(DataSource ds) {
-        super(ds);
+    private static MySqlAppointmentDao instance;
+
+    public static AppointmentDao getInstance() {
+        if (instance == null) {
+            instance = new MySqlAppointmentDao();
+        }
+        return instance;
     }
+
+    private MySqlAppointmentDao(){}
 
     @Override
     protected Appointment mapToEntity(ResultSet rs) throws SQLException {
@@ -22,6 +28,6 @@ public class MySqlAppointmentDao extends GenericDao<Appointment> implements Appo
 
     @Override
     protected void mapFromEntity(PreparedStatement statement, Appointment entity) throws SQLException {
-
+        //TODO
     }
 }

@@ -2,26 +2,22 @@ package com.yaroslav.lobur.model.dao;
 
 import com.yaroslav.lobur.exceptions.DBExceptionMessages;
 import com.yaroslav.lobur.exceptions.EntityNotFoundException;
+import com.yaroslav.lobur.exceptions.InputErrorsMessagesException;
 import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.entity.Entity;
-import com.yaroslav.lobur.model.entity.enums.OrderBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public abstract class GenericDao<T extends Entity> {
+public abstract class GenericDao<T extends Entity>  {
 
     private static final Logger logger = LoggerFactory.getLogger(GenericDao.class);
 
-    protected DataSource ds;
-
-    protected GenericDao(DataSource ds) {
-        this.ds = ds;
-    }
+    private int noOfRecords;
 
     protected List<T> findAll(Connection con, String sql) {
         List<T> list = new ArrayList<>();
@@ -33,12 +29,21 @@ public abstract class GenericDao<T extends Entity> {
             while (rs.next()) {
                 list.add(mapToEntity(rs));
             }
+            rs.close();
+            rs = ps.executeQuery("SELECT FOUND_ROWS()");
+            if (rs.next()) {
+                this.noOfRecords = rs.getInt(1);
+            }
             return list;
         } catch (SQLException e) {
             throw new UnknownSqlException(e.getMessage());
         } finally {
-            closeAll(rs, ps, con);
+            closeResultSetAndPreparedStatement(rs, ps);
         }
+    }
+
+    public int getNoOfRecords() {
+        return noOfRecords;
     }
 
     @SafeVarargs
@@ -52,13 +57,11 @@ public abstract class GenericDao<T extends Entity> {
             while (rs != null && rs.next()) {
                 list.add(mapToEntity(rs));
             }
-            if (list.isEmpty())
-                throw new EntityNotFoundException("");
             return list;
         } catch (SQLException e) {
             throw new UnknownSqlException(e.getMessage(), e.getCause());
         } finally {
-            closeAll(rs, ps, con);
+            closeResultSetAndPreparedStatement(rs, ps);
         }
     }
 
@@ -68,20 +71,11 @@ public abstract class GenericDao<T extends Entity> {
         int pos = 1;
         for (V value : values) {
             switch (value.getClass().getSimpleName()) {
-                case "Integer":
-                    ps.setInt(pos, (Integer) value);
-                    break;
-                case "Long":
-                    ps.setLong(pos, (Long) value);
-                    break;
-                case "String":
-                    ps.setString(pos, (String) value);
-                    break;
-                case "Date":
-                    ps.setDate(pos, (Date) value);
-                    break;
-                default:
-                    throw new IllegalArgumentException();
+                case "Integer" -> ps.setInt(pos, (Integer) value);
+                case "Long" -> ps.setLong(pos, (Long) value);
+                case "String" -> ps.setString(pos, (String) value);
+                case "Date" -> ps.setDate(pos, (Date) value);
+                default -> throw new IllegalArgumentException();
             }
             ++pos;
             rs = ps.executeQuery();
@@ -105,7 +99,7 @@ public abstract class GenericDao<T extends Entity> {
         } catch (SQLException e) {
             throw new UnknownSqlException(e.getMessage(), e.getCause());
         } finally {
-            closeAll(rs, ps, con);
+            closeResultSetAndPreparedStatement(rs, ps);
         }
     }
 
@@ -113,57 +107,57 @@ public abstract class GenericDao<T extends Entity> {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            connection.setAutoCommit(false);
             ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             mapFromEntity(ps, item);
             if (ps.executeUpdate() > 0) {
                 rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    connection.commit();
                     return rs.getLong(1);
                 }
             }
-            connection.rollback();
-            throw new DBExceptionMessages(List.of("sql.insert"));
+            throw new InputErrorsMessagesException(Map.of("insert_error","sql.insert"));
         } catch (SQLException e) {
             throw new UnknownSqlException(e.getMessage());
         } finally {
-            closeAll(rs, ps, connection);
+            closeResultSetAndPreparedStatement(rs, ps);
         }
     }
 
     protected void deleteEntity(Connection connection, String sql) {
-        try(Connection con = connection; PreparedStatement ps = con.prepareStatement(sql)) {
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(sql);
             ps.executeUpdate();
         } catch (SQLIntegrityConstraintViolationException e) {
             throw new DBExceptionMessages(List.of("sql.data_integrity"));
         } catch (SQLException e) {
             throw new UnknownSqlException(e.getMessage(), e.getCause());
+        } finally {
+            closeResultSetAndPreparedStatement(null, ps);
         }
     }
 
     protected <V> void updateByField(Connection connection, String sql, T item, int parameterIndex, V value) {
-        try (Connection con = connection; PreparedStatement ps = con.prepareStatement(sql)) {
+        PreparedStatement ps = null;
+        try {
+            ps = connection.prepareStatement(sql);
             switch (value.getClass().getSimpleName()) {
-                case "Integer":
-                    ps.setInt(parameterIndex, (Integer) value);
-                    break;
-                case "String":
-                    ps.setString(parameterIndex, (String) value);
-                    break;
-                default:
-                    throw new IllegalArgumentException();
+                case "Integer" -> ps.setInt(parameterIndex, (Integer) value);
+                case "String" -> ps.setString(parameterIndex, (String) value);
+                default -> throw new IllegalArgumentException();
             }
             mapFromEntity(ps, item);
             if (ps.executeUpdate() == 0)
                 throw new DBExceptionMessages(List.of("sql.not_updated"));
         } catch (SQLException e) {
             throw new UnknownSqlException(e.getMessage(), e.getCause());
+        } finally {
+            closeResultSetAndPreparedStatement(null, ps);
         }
     }
 
-    protected <V> void updateEntity(Connection connection, String sql, T item) {
-        try (Connection con = connection; PreparedStatement ps = con.prepareStatement(sql)) {
+    protected void updateEntity(Connection connection, String sql, T item) {
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             mapFromEntity(ps, item);
             if (ps.executeUpdate() == 0)
                 throw new DBExceptionMessages(List.of("sql.not_updated"));
@@ -172,18 +166,11 @@ public abstract class GenericDao<T extends Entity> {
         }
     }
 
-    protected Connection getConnection() {
-        try {
-            return ds.getConnection();
-        } catch (SQLException e) {
-            throw new UnknownSqlException("Error when getting a connection", e.getCause());
-        }
-    }
     protected abstract T mapToEntity(ResultSet rs) throws SQLException;
 
     protected abstract void mapFromEntity(PreparedStatement statement, T entity) throws SQLException;
 
-    protected void closeAll(ResultSet rs, Statement statement, Connection con) {
+    protected void closeResultSetAndPreparedStatement(ResultSet rs, Statement statement) {
         if (rs != null) {
             try {
                 rs.close();
@@ -194,13 +181,6 @@ public abstract class GenericDao<T extends Entity> {
         if (statement != null) {
             try {
                 statement.close();
-            } catch (SQLException e) {
-                logger.error(e.getMessage());
-            }
-        }
-        if (con != null) {
-            try {
-                con.close();
             } catch (SQLException e) {
                 logger.error(e.getMessage());
             }
