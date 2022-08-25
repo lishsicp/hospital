@@ -21,23 +21,22 @@
         <c:import url="topnav.jsp"/>
         <%--Page Content--%>
         <div class="container">
-                <form class="row g-3" action="${pageContext.request.contextPath}/controller">
-                    <div class="col-4">
-                        <input type="hidden" name="action" value="list_doctors">
-                        <label for="sorting_type" class=""><fmt:message key="doctor.sort"/> </label>
-                        <select class="form-select" name="sorting_type" id="sorting_type" onchange="submit()">
-                            <option value="" selected disabled><fmt:message key="patient.select.sort" /></option>
-                            <option value="NAME" ${sessionScope.sortBy == 'NAME' ? 'selected' : ''}><fmt:message key="patient.sort.name" /></option>
-                            <option value="CATEGORY" ${sessionScope.sortBy == 'CATEGORY' ? 'selected' : ''}><fmt:message key="doctor.sort.category" /></option>
-                            <option value="NUMBER_OF_PATIENTS" ${sessionScope.sortBy == 'NUMBER_OF_PATIENTS' ? 'selected' : ''}><fmt:message key="doctor.sort.patients" /></option>
-                        </select>
-                    </div>
-                    <div class="col-2">
-                        <label for="recordsPerPage">Items per page:</label>
-                        <input type="number" name="recordsPerPage" id="recordsPerPage" oninput="submit()" value="${recordsPerPage}">
-                    </div>
-                </form>
-
+            <form class="row g-3" action="${pageContext.request.contextPath}/controller">
+                <div class="col-4">
+                    <input type="hidden" name="action" value="list_doctors">
+                    <label for="sorting_type" class=""><fmt:message key="doctor.sort"/> </label>
+                    <select class="form-select" name="sorting_type" id="sorting_type" onchange="submit()">
+                        <option value="" selected disabled><fmt:message key="patient.select.sort" /></option>
+                        <option value="NAME" ${sessionScope.sortBy == 'NAME' ? 'selected' : ''}><fmt:message key="patient.sort.name" /></option>
+                        <option value="CATEGORY" ${sessionScope.sortBy == 'CATEGORY' ? 'selected' : ''}><fmt:message key="doctor.sort.category" /></option>
+                        <option value="NUMBER_OF_PATIENTS" ${sessionScope.sortBy == 'NUMBER_OF_PATIENTS' ? 'selected' : ''}><fmt:message key="doctor.sort.patients" /></option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <label for="recordsPerPage">Items per page:</label>
+                    <input type="number" name="recordsPerPage" id="recordsPerPage" oninput="submit()" value="${recordsPerPage}">
+                </div>
+            </form>
 
             <h3><fmt:message key="patient.list.doctors"/></h3>
             <table class="table table-light table-striped table-hover" aria-describedby="">
@@ -83,7 +82,7 @@
                             <c:otherwise>
                                 <li class="page-item">
                                     <a class="page-link"
-                                    href="${pageContext.request.contextPath}/controller?action=list_doctors&sorting_type=${sortBy}&page=${i}&recordsPerPage=${recordsPerPage}">
+                                       href="${pageContext.request.contextPath}/controller?action=list_doctors&sorting_type=${sortBy}&page=${i}&recordsPerPage=${recordsPerPage}">
                                             ${i}
                                     </a>
                                 </li>

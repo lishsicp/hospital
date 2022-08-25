@@ -7,6 +7,7 @@ import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
 
+import javax.print.Doc;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -61,9 +62,23 @@ public class MySqlDoctorDao extends GenericDao<Doctor> implements DoctorDao {
         return findAll(con, query + " ORDER BY " + order.getField() + " LIMIT " + offset + ", " + noOfRecords);
     }
 
+    public List<Doctor> findDoctorsByCategory(Connection connection, long categoryId) {
+        return findEntities(connection, "SELECT *, " + SELECT_NUMBER_OF_PATIENTS + "FROM doctor d WHERE category_id = ? ORDER BY NumberOfPatients LIMIT 5", categoryId);
+    }
+
     @Override
     public Doctor findDoctorById(Connection connection, long id) {
         return findEntity(connection, "SELECT *" + ", " + SELECT_NUMBER_OF_PATIENTS + "FROM doctor d WHERE id=?", id);
+    }
+
+    @Override
+    public Doctor findDoctorByUserId(Connection connection, long id) {
+        return findEntity(connection, "SELECT *" + ", " + SELECT_NUMBER_OF_PATIENTS + "FROM doctor d WHERE user_id=?", id);
+    }
+
+    @Override
+    public int getNumberOfRecords() {
+        return super.getNumberOfRecords();
     }
 
     @Override

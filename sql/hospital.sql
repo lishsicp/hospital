@@ -117,7 +117,7 @@ DROP TABLE IF EXISTS `hospital`.`patient`;
 CREATE TABLE IF NOT EXISTS `hospital`.`patient`
 (
     `id`            INT                              NOT NULL AUTO_INCREMENT,
-    `status`        VARCHAR(128)                     NOT NULL,
+    `status`        ENUM('NEW', 'TREATMENT', 'DISCHARGED')                     NOT NULL,
     `doctor_id`     INT                              NULL DEFAULT NULL,
     `firstname`     VARCHAR(45)                      NOT NULL,
     `lastname`      VARCHAR(45)                      NOT NULL,
@@ -237,16 +237,16 @@ VALUES ('vera1979', '70ccd9007338d6d81dd3b6271621b9cf9a97ea00', 'Vera', 'Stepano
 
 INSERT INTO hospital.patient
 (id, status, doctor_id, firstname, lastname, date_of_birth, gender, email)
-VALUES (1, 'Applied for treatment', 3, 'Varvara', 'Lastname', '2000-01-25', 'FEMALE',
+VALUES (1, 'TREATMENT', 3, 'Varvara', 'Lastname', '2000-01-25', 'FEMALE',
         'varvar2000@gmail.com');
 
 INSERT INTO hospital.patient
 (id, status, doctor_id, firstname, lastname, date_of_birth, gender, email)
-VALUES (2, 'Applied for treatment', 1, 'Ivan', 'Ivasiyk', '2000-01-25', 'MALE', 'ivan2000@gmail.com');
+VALUES (2, 'TREATMENT', 1, 'Ivan', 'Ivasiyk', '2000-01-25', 'MALE', 'ivan2000@gmail.com');
 
 INSERT INTO hospital.patient
 (id, status, doctor_id, firstname, lastname, date_of_birth, gender, email)
-VALUES (3, 'Applied for treatment', NULL, 'Bob', 'Birch', '1990-12-01', 'MALE', 'bob90@gmail.com');
+VALUES (3, 'TREATMENT', NULL, 'Bob', 'Birch', '1990-12-01', 'MALE', 'bob90@gmail.com');
 
 INSERT INTO hospital.hospital_card
     (id, diagnosis, patient_id)
@@ -307,4 +307,20 @@ SELECT d.id,
        (SELECT count(id) FROM patient WHERE patient.doctor_id = d.id) as NumberOfPatients
 FROM doctor d
          JOIN category c ON d.category_id = c.id
-         JOIN user u ON u.id = d.user_id ORDER BY lastname LIMIT 3, 5;
+         JOIN user u ON u.id = d.user_id ORDER BY lastname LIMIT 0, 5;
+
+SELECT SQL_CALC_FOUND_ROWs * FROM patient WHERE doctor_id IS NULL ORDER BY lastname LIMIT 0, 5;
+
+SELECT *,
+       (SELECT count(id) FROM patient WHERE patient.doctor_id = d.id) as NumberOfPatients FROM doctor d WHERE category_id = ? ORDER BY NumberOfPatients LIMIT 5
+
+
+SELECT SQL_CALC_FOUND_ROWS h.id, h.diagnosis, h.patient_id
+FROM hospital_card h WHERE 3 IN (SELECT doctor_id FROM patient WHERE id=patient_id)
+ORDER BY (SELECT lastname FROM patient WHERE patient_id=patient.id) ASC
+LIMIT 0, 5;
+
+SELECT SQL_CALC_FOUND_ROWS h.id, h.diagnosis, h.patient_id
+FROM hospital_card h WHERE %d IN (SELECT doctor_id FROM patient WHERE id=patient_id)
+ORDER BY (SELECT lastname FROM patient WHERE patient_id=patient.id) DESC
+LIMIT %d, %d;

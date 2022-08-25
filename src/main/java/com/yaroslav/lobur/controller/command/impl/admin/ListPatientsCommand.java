@@ -11,12 +11,17 @@ import com.yaroslav.lobur.utils.PagePathManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.stream.Collectors;
 
 public class ListPatientsCommand implements Command {
 
     private final Logger logger = LoggerFactory.getLogger(ListPatientsCommand.class);
+
+    private static final int NUMBER_OF_RECORDS_PER_PAGE = 5;
 
     @Override
     public CommandResult execute(HttpServletRequest request, HttpServletResponse response) {
@@ -25,22 +30,48 @@ public class ListPatientsCommand implements Command {
         DoctorService doctorService = (DoctorService) request.getServletContext().getAttribute("doctorService");
         String sortBy = request.getParameter("sorting_type");
         OrderBy order = sortBy == null ? OrderBy.NAME : OrderBy.valueOf(sortBy);
+
+        int pageNo = 1;
+        if (request.getParameter("page") != null)
+            pageNo = NumberUtils.toInt(request.getParameter("page"));
+
+        int recordsPerPage = NumberUtils.toInt(request.getParameter("recordsPerPage"));
+        recordsPerPage = recordsPerPage == 0 ? NUMBER_OF_RECORDS_PER_PAGE : recordsPerPage;
+
+        request.setAttribute("recordsPerPage", recordsPerPage);
+
         session.setAttribute("sortBy", order.name());
         logger.info("Sorting patients by {}", order);
         try {
-            var patients = patientService.getAllPatientsSorted(order);
-            var doctors = doctorService.getAllDoctorsOrderBy(OrderBy.NAME, 0, 100);
-            patients.stream()
-                    .filter(p -> p.getDoctor() != null)
-                    .forEach(p -> p.setDoctor(doctors
-                            .stream()
-                            .filter(d -> d.getId() == p.getDoctor().getId())
-                            .findFirst()
-                            .get()));
+            int offset = Math.max((pageNo - 1) * recordsPerPage, 0);
+            logger.debug("offset {}", offset);
+            var doctors = doctorService.getAllDoctors();
+            var patients = patientService.getAllPatientsSorted(order, offset, recordsPerPage);
+            var categories = doctorService.getAllCategories();
+            int noOfRecords = patientService.getNumberOfRecords();
+            boolean noDoctor = request.getParameter("no_doctor") != null && request.getParameter("no_doctor").equals("true");
+            session.setAttribute("no_doctor", noDoctor);
+            if (noDoctor) {
+                patients = patientService.getPatientsWithoutDoctor(order, offset, recordsPerPage);
+                noOfRecords = patientService.getNumberOfRecords();
+                logger.debug("{}", patients);
+            } else {
+                if (patients != null)
+                    patients.stream()
+                            .filter(p -> p.getDoctor() != null)
+                            .forEach(p -> p.setDoctor(doctors
+                                    .stream()
+                                    .filter(d -> d.getId() == p.getDoctor().getId())
+                                    .findFirst().orElse(null)));
+            }
+            session.setAttribute("categories", categories);
             session.setAttribute("patients", patients);
+            int noOfPages = (int) Math.ceil(noOfRecords * 1.0 / recordsPerPage);
+            request.setAttribute("noOfPages", noOfPages);
+            request.setAttribute("currentPageNo", pageNo);
         } catch (UnknownSqlException | EntityNotFoundException e) {
             logger.error("Error - {}",  e.getMessage());
-            session.setAttribute("exception", e);
+            throw e;
         }
         String page = PagePathManager.getProperty("page.admin.patients");
         session.setAttribute("currentPage", page);

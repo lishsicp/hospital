@@ -39,7 +39,7 @@ public class ListDoctorsCommand implements Command {
         int recordsPerPage = NumberUtils.toInt(request.getParameter("recordsPerPage"));
         recordsPerPage = recordsPerPage == 0 ? NUMBER_OF_RECORDS_PER_PAGE : recordsPerPage;
 
-        session.setAttribute("recordsPerPage", recordsPerPage);
+        request.setAttribute("recordsPerPage", recordsPerPage);
         session.setAttribute("sortBy", order.name());
 
         try {
@@ -47,8 +47,8 @@ public class ListDoctorsCommand implements Command {
             int noOfRecords = doctorService.getNumberOfRecords();
             int noOfPages = (int) Math.ceil(noOfRecords * 1.0 / recordsPerPage);
             session.setAttribute("doctors", doctors);
-            session.setAttribute("noOfPages", noOfPages);
-            session.setAttribute("currentPageNo", pageNo);
+            request.setAttribute("noOfPages", noOfPages);
+            request.setAttribute("currentPageNo", pageNo);
         } catch (EntityNotFoundException | UnknownSqlException e) {
             logger.error("", e);
         }

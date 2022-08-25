@@ -25,7 +25,7 @@ public class DateFormatterTag extends SimpleTagSupport {
     public void doTag() throws JspException, IOException {
         DateTimeFormatter dateTimeFormatter;
         if (date == null) return;
-        if ("en".equals(locale.toLowerCase(Locale.ROOT))) {
+        if ("en-US".equals(locale)) {
             dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         } else {
             dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");

@@ -12,7 +12,11 @@ public interface DoctorDao {
 
     Doctor findDoctorById(Connection con, long id);
 
-    int getNoOfRecords();
+    Doctor findDoctorByUserId(Connection con, long id);
+
+    int getNumberOfRecords();
+
+    List<Doctor> findDoctorsByCategory(Connection connection, long categoryId);
 
     long insertDoctor(Connection con, Doctor doctor);
 }

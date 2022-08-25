@@ -5,6 +5,8 @@ import com.yaroslav.lobur.controller.command.impl.admin.*;
 import com.yaroslav.lobur.controller.command.impl.authentication.LogoutCommand;
 import com.yaroslav.lobur.controller.command.impl.authentication.UserSignInCommand;
 import com.yaroslav.lobur.controller.command.impl.authentication.UserSignUpCommand;
+import com.yaroslav.lobur.controller.command.impl.doctor.MyPatientsCommand;
+import com.yaroslav.lobur.controller.command.impl.doctor.UpdatePatientDiagnosisCommand;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +34,11 @@ public class CommandHandler {
         commandMap.put("add_doctor", new AdminAddDoctorCommand());
         commandMap.put("delete_patient", new DeletePatientCommand());
         commandMap.put("edit_patient", new EditPatientCommand());
+        commandMap.put("doctors_by_category", new DoctorsByCategory());
+        commandMap.put("assign_doctor", new AssignDoctorCommand());
+        commandMap.put("my_patients", new MyPatientsCommand());
+        commandMap.put("view_patient", new ViewPatientCommand());
+        commandMap.put("update_diagnosis", new UpdatePatientDiagnosisCommand());
     }
 
     public static CommandHandler getInstance() {

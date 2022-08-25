@@ -51,6 +51,7 @@
     </form>
     <p><fmt:message key="signin.account" /> <a class="link-info text-decoration-none" href="${pageContext.request.contextPath}/sign_up.jsp"><fmt:message key="header.signup" /></a></p>
 </div>
+<c:import url="scripts.jsp"/>
 <c:import url="footer.jsp" />
 
 </body>

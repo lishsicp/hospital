@@ -7,6 +7,7 @@ import com.yaroslav.lobur.model.dao.PatientDao;
 import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.Patient;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
+import com.yaroslav.lobur.model.entity.enums.PatientStatus;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public class MySqlPatientDao extends GenericDao<Patient> implements PatientDao {
     protected Patient mapToEntity(ResultSet rs) throws SQLException {
         Patient patient = new Patient();
         patient.setId(rs.getLong("id"));
-        patient.setStatus(rs.getString("status"));
+        patient.setStatus(PatientStatus.valueOf(rs.getString("status")));
         long doctorId = rs.getLong("doctor_id");
         if (doctorId > 0) {
             Doctor doctor = new Doctor();
@@ -71,9 +72,14 @@ public class MySqlPatientDao extends GenericDao<Patient> implements PatientDao {
     }
 
     @Override
+    public int getNumberOfRecords() {
+        return super.getNumberOfRecords();
+    }
+
+    @Override
     protected void mapFromEntity(PreparedStatement ps, Patient patient) throws SQLException {
         int k = 1;
-        ps.setString(k++, patient.getStatus());
+        ps.setString(k++, patient.getStatus().name());
         if (patient.getDoctor() == null) {
             ps.setNull(k++, Types.INTEGER);
         } else {
@@ -96,23 +102,22 @@ public class MySqlPatientDao extends GenericDao<Patient> implements PatientDao {
     }
 
     @Override
-    public List<Patient> findPatientsWithoutDoctor(Connection connection) {
-        return findEntities(connection, "SELECT * FROM patient WHERE doctor_id != NULL");
-    }
-
-    @Override
     public List<Patient> findPatientsWithDoctor(Connection connection) {
-        return findEntities(connection, "SELECT * FROM patient WHERE doctor_id = NULL");
+        return findEntities(connection, "SELECT SQL_CALC_FOUND_ROWS * FROM patient WHERE doctor_id != NULL");
     }
 
     @Override
-    public List<Patient> findPatientsOrderBy(Connection connection, OrderBy order) {
-        String query = "SELECT * FROM patient";
-        return findAll(connection, query + " ORDER BY " + order.getField());
+    public List<Patient> findPatientsWithoutDoctor(Connection connection, OrderBy order, int offset, int noOfRecords) {
+        return findAll(connection, String.format("SELECT SQL_CALC_FOUND_ROWS * FROM patient WHERE doctor_id IS NULL ORDER BY %s LIMIT %d, %d", order.getField(), offset, noOfRecords));
     }
 
-    public void insertPatient(Connection connection, Patient patient) {
-        insertEntity(connection, INSERT_TEMPLATE, patient);
+    @Override
+    public List<Patient> findPatientsOrderBy(Connection connection, OrderBy order, int offset, int noOfRecords) {
+        return findAll(connection, String.format("SELECT SQL_CALC_FOUND_ROWS * FROM patient ORDER BY %s LIMIT %d, %d", order.getField(), offset, noOfRecords));
+    }
+
+    public long insertPatient(Connection connection, Patient patient) {
+        return insertEntity(connection, INSERT_TEMPLATE, patient);
     }
 
     public void deletePatient(Connection connection, long id) {

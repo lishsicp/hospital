@@ -11,7 +11,7 @@
     <div class="container-fluid">
         <c:if test="${current_user ne null}">
             <button class="btn" id="sidebarToggle" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                    title="<fmt:message key="header.toggle.tooltip"/>"><h1><i id="menuToggle" class="bi bi-toggle-on"></i></h1>
+                    title="<fmt:message key="header.toggle.tooltip"/>"><h3 style="margin-bottom: 0;"><i id="menuToggle" class="bi bi-toggle-on"></i></h3>
             </button>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent"
@@ -23,24 +23,25 @@
         </c:if>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                <li class="nav-item"><p class="nav-link"><fmt:message key="header.lang"/>: </p></li>
-                <li class="nav-item">
-                    <form class="nav-link">
+                <li class="nav-item h-100">
+                    <p class="nav-link" style="margin-bottom: 0;"><fmt:message key="header.lang"/>: </p>
+                </li>
+                <li class="nav-item h-100">
+                    <form class="nav-link" style="margin-bottom: 0;">
                         <label for="language"></label>
-                        <select class="form-select form-select-sm" id="language" name="language" onchange="submit()">
-                            <option value="en_US" ${sessionScope.language == 'en_US' ? 'selected' : ''}>EN</option>
-                            <option value="uk_UA" ${sessionScope.language == 'uk_UA' ? 'selected' : ''}>UA</option>
+                        <select class="" id="language" name="language" onchange="submit()">
+                            <option value="en-US" ${sessionScope.language == 'en-US' ? 'selected' : ''}>EN</option>
+                            <option value="uk-UA" ${sessionScope.language == 'uk-UA' ? 'selected' : ''}>UA</option>
                         </select>
                     </form>
                 </li>
-                <li class="nav-item"><a class="nav-link" href="#!">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="#!">Link</a></li>
+<%--                <li class="nav-item"><a class="nav-link" href="#!">Home</a></li>--%>
                 <c:if test="${current_user ne null}">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button"
+                    <li class="nav-item h-100 dropdown">
+                        <a class="nav-link dropdown-toggle" style="margin-bottom: 0;" id="navbarDropdown" href="#" role="button"
                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="${pageContext.request.contextPath}/controller?action=view_user&user_id=${current_user.id}">Profile</a>
+                            <a class="dropdown-item" href="${pageContext.request.contextPath}/controller?action=view_user&user_id=${current_user.id}"><fmt:message key="profile"/></a>
                             <a class="dropdown-item" href="#!">Another action</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="${pageContext.request.contextPath}/controller?action=logout"><fmt:message

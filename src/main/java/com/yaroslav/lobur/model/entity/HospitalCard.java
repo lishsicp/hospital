@@ -15,7 +15,6 @@ public class HospitalCard implements Entity {
     this.id = id;
   }
 
-
   public String getDiagnosis() {
     return diagnosis;
   }
@@ -23,7 +22,6 @@ public class HospitalCard implements Entity {
   public void setDiagnosis(String diagnosis) {
     this.diagnosis = diagnosis;
   }
-
 
   public Patient getPatient() {
     return patient;

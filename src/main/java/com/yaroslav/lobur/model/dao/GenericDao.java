@@ -42,7 +42,7 @@ public abstract class GenericDao<T extends Entity>  {
         }
     }
 
-    public int getNoOfRecords() {
+    protected int getNumberOfRecords() {
         return noOfRecords;
     }
 
@@ -56,6 +56,13 @@ public abstract class GenericDao<T extends Entity>  {
             rs = setResultSetValues(ps, values);
             while (rs != null && rs.next()) {
                 list.add(mapToEntity(rs));
+            }
+            if (rs != null) {
+                rs.close();
+            }
+            rs = ps.executeQuery("SELECT FOUND_ROWS()");
+            if (rs.next()) {
+                this.noOfRecords = rs.getInt(1);
             }
             return list;
         } catch (SQLException e) {
@@ -95,7 +102,7 @@ public abstract class GenericDao<T extends Entity>  {
                 entity = mapToEntity(rs);
                 return entity;
             }
-            throw new EntityNotFoundException("not found");
+            throw new EntityNotFoundException("not.found");
         } catch (SQLException e) {
             throw new UnknownSqlException(e.getMessage(), e.getCause());
         } finally {

@@ -55,7 +55,7 @@
                         <div class="col-md-4">
                             <label class="form-label" for="gender"><strong><fmt:message key="signup.gender"/></strong></label>
                             <select class="form-select required" name="gender" id="gender" required onclick="deleteInvalid(this)">
-                                <option disabled selected value="<fmt:message key="signup.chose.gender"/>"><fmt:message
+                                <option disabled selected value=""><fmt:message
                                         key="signup.chose.gender"/></option>
                                 <option value="MALE"><fmt:message key="signup.gender.male"/></option>
                                 <option value="FEMALE"><fmt:message key="signup.gender.female"/></option>
@@ -84,9 +84,15 @@
                         </c:if>
                     </div>
                 </form>
-                <c:if test="${sessionScope.userErrors != null}">
+                <c:if test="${sessionScope.success != null}">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong><fmt:message key="${sessionScope.success}" /></strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="${sessionScope.remove("success")}"></button>
+                    </div>
+                </c:if>
+                <c:if test="${requestScope.errors != null}">
                     <div class="text-danger">
-                        <c:forEach var="error" items="${sessionScope.userErrors}">
+                        <c:forEach var="error" items="${requestScope.errors}">
                             <script>
                                 var key = '${error.key}';
                                 var message = "<fmt:message key="${error.value}" bundle="${val}"/>";
@@ -96,6 +102,7 @@
                                 input.parentElement.querySelector(".text-danger").innerHTML = message;
                             </script>
                         </c:forEach>
+                        <c:if test="${errors['insert_error'] != null}"><fmt:message key="${errors['insert_error']}" /></c:if>
                     </div>
                 </c:if>
             </div>

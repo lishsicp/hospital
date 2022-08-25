@@ -31,18 +31,20 @@ public class DoctorService {
         doctorDao = daoFactory.getDoctorDao();
     }
 
-//    public List<Doctor> getAllDoctors() {
-//        try {
-//            Connection con = daoFactory.open();
-//            List<Doctor> doctors = doctorDao.findAllDoctors(daoFactory.open());
-//            setDoctorFields(doctors);
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            throw e;
-//        }
-//
-//        return doctors;
-//    }
+    public List<Doctor> getAllDoctors() {
+        Connection con = null;
+        List<Doctor> doctors;
+        try {
+            con = daoFactory.open();
+            doctors = doctorDao.findAllDoctors(con);
+            List<User> users = userDao.findAllByRole(con, Role.DOCTOR);
+            List<Category> categories = categoryDao.findAllCategories(con);
+            setDoctorFields(doctors, users, categories);
+        } finally {
+            daoFactory.close(con);
+        }
+        return doctors;
+    }
 
     private void setDoctorFields(List<Doctor> doctors, List<User> users, List<Category> categories) {
         for (Doctor d : doctors) {
@@ -57,6 +59,25 @@ public class DoctorService {
                 }
             }
         }
+    }
+
+    public List<Doctor> getDoctorsByCategory(long categoryId) {
+        Connection con = daoFactory.open();
+        List<Doctor> doctors;
+        List<User> users;
+        List<Category> categories;
+        try {
+            doctors = doctorDao.findDoctorsByCategory(con, categoryId);
+            users = userDao.findAllByRole(con, Role.DOCTOR);
+            categories = categoryDao.findAllCategories(con);
+            setDoctorFields(doctors, users, categories);
+            return doctors;
+        } catch (UnknownSqlException e) {
+            logger.error("", e);
+        } finally {
+            daoFactory.close(con);
+        }
+        return null;
     }
 
     public List<Doctor> getAllDoctorsOrderBy(OrderBy order, int offset, int noOfRecords) {
@@ -76,11 +97,19 @@ public class DoctorService {
     }
 
     public int getNumberOfRecords() {
-        return doctorDao.getNoOfRecords();
+        return doctorDao.getNumberOfRecords();
     }
 
     public List<Category> getAllCategories() {
-        return categoryDao.findAllCategories(daoFactory.open());
+        Connection con = null;
+        List<Category> categories;
+        try {
+            con = daoFactory.open();
+            categories = categoryDao.findAllCategories(daoFactory.open());
+        } finally {
+            daoFactory.close(con);
+        }
+        return categories;
     }
 
     public void addDoctor(Doctor doctor) {
@@ -98,6 +127,19 @@ public class DoctorService {
         } finally {
             daoFactory.endTransaction(connection);
         }
+    }
+
+    public Doctor getDoctorByUser(User user) {
+        Connection con = null;
+        Doctor doctor;
+        try {
+            con = daoFactory.open();
+            doctor = doctorDao.findDoctorByUserId(con, user.getId());
+            doctor.setUser(user);
+        } finally {
+            daoFactory.close(con);
+        }
+        return doctor;
     }
 
 

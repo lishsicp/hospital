@@ -1,11 +1,13 @@
 package com.yaroslav.lobur.model.entity;
 
+import com.yaroslav.lobur.model.entity.enums.PatientStatus;
+
 import java.util.Date;
 
 public class Patient implements Entity {
 
   private long id;
-  private String status;
+  private PatientStatus status;
   private Doctor doctor;
   private String firstname;
   private String lastname;
@@ -21,11 +23,11 @@ public class Patient implements Entity {
     this.id = id;
   }
 
-  public String getStatus() {
+  public PatientStatus getStatus() {
     return status;
   }
 
-  public void setStatus(String status) {
+  public void setStatus(PatientStatus status) {
     this.status = status;
   }
 

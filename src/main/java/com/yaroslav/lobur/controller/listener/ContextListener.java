@@ -70,4 +70,14 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
         DOMConfigurator.configure(fullPath);
         logger.info("Application started");
     }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce) {
+        ServletContext servletContext = sce.getServletContext();
+        servletContext.removeAttribute(DATASOURCE_PARAM);
+        servletContext.removeAttribute("userService");
+        servletContext.removeAttribute("patientService");
+        servletContext.removeAttribute("doctorService");
+
+    }
 }

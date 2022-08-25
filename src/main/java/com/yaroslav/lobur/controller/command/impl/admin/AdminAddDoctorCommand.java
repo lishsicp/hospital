@@ -13,6 +13,7 @@ import com.yaroslav.lobur.service.PatientService;
 import com.yaroslav.lobur.utils.CommandResult;
 import com.yaroslav.lobur.utils.PagePathManager;
 import com.yaroslav.lobur.utils.PasswordEncryptor;
+import com.yaroslav.lobur.utils.requestparsers.UserRequestParser;
 import com.yaroslav.lobur.validator.DoctorValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,20 +41,7 @@ public class AdminAddDoctorCommand implements Command {
             session.setAttribute("categories", categories);
             return new CommandResult(page);
         }
-        User user = new User();
-        user.setLogin(request.getParameter("login"));
-        user.setPassword(request.getParameter("psw"));
-        user.setFirstname(request.getParameter("firstName"));
-        user.setLastname(request.getParameter("lastName"));
-        user.setDateOfBirth(Date.valueOf(request.getParameter("date_of_birth")));
-        user.setGender(request.getParameter("gender"));
-        user.setEmail(request.getParameter("email"));
-        user.setPhone(request.getParameter("phone"));
-        user.setLocale(Locale.UK);
-        user.setAddress(request.getParameter("address"));
-        // default role
-        user.setRole(Role.DOCTOR);
-
+        User user = UserRequestParser.parseUser(request);
         Category category = new Category();
         long categoryId = NumberUtils.toLong(request.getParameter("category"));
         category.setId(categoryId);
@@ -70,7 +58,6 @@ public class AdminAddDoctorCommand implements Command {
             try {
                 user.setPassword(PasswordEncryptor.getSHA1String(user.getPassword()));
                 doctorService.addDoctor(doctor);
-                session.removeAttribute("userErrors");
             } catch (InputErrorsMessagesException e) {
                 logger.debug("Validation fail");
                 errors.putAll(e.getErrorMessageMap());
@@ -79,9 +66,11 @@ public class AdminAddDoctorCommand implements Command {
         if (!errors.isEmpty()) {
             logger.debug("Doctor is not valid {}", category.getId());
             session.setAttribute("doctorErrors", errors);
+            return new CommandResult(page);
         } else {
+            session.removeAttribute("doctorErrors");
             session.setAttribute("success", "signup.doctor.success");
         }
-        return new CommandResult(request.getHeader("referer"), true);
+        return new CommandResult(request.getContextPath() + page, true);
     }
 }

@@ -22,7 +22,7 @@
         <c:import url="topnav.jsp"/>
         <%--Page Content--%>
         <div class="container">
-            <h3><fmt:message key="admin.doctor.add"/> </h3>
+            <h3 class="m-4"><fmt:message key="admin.doctor.add"/> </h3>
             <form action="${pageContext.request.contextPath}/controller" name="form" class="needs-validation"
                   method="post">
                 <input type="hidden" name="action" value="add_doctor">
@@ -84,7 +84,7 @@
                         <label class="form-label" for="gender"><strong><fmt:message
                                 key="signup.gender"/></strong></label>
                         <select class="form-select required" name="gender" id="gender" onclick="deleteInvalid(this)" required>
-                            <option disabled selected value="<fmt:message key="signup.chose.gender"/>"><fmt:message
+                            <option disabled selected value=""><fmt:message
                                     key="signup.chose.gender"/></option>
                             <option value="MALE"><fmt:message key="signup.gender.male"/></option>
                             <option value="FEMALE"><fmt:message key="signup.gender.female"/></option>
@@ -111,7 +111,7 @@
                         <label class="form-label" for="category"><strong><fmt:message
                                 key="signup.category"/></strong></label>
                         <select class="form-select required" name="category" id="category" onclick="deleteInvalid(this)" required>
-                            <option disabled selected value="<fmt:message key="signup.chose.category"/>"><fmt:message
+                            <option disabled selected value=""><fmt:message
                                     key="signup.chose.category"/></option>
                             <c:forEach var="c" items="${sessionScope.categories}">
                                 <option value="${c.id}"><fmt:message key="signup.category.${c.name}"/></option>
@@ -127,7 +127,7 @@
                     <c:if test="${sessionScope.success != null}">
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <strong><fmt:message key="${sessionScope.success}" /></strong>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="${sessionScope.remove("success")}"></button>
                         </div>
                     </c:if>
                 </div>
