@@ -9,6 +9,6 @@
     <title>Database error</title>
 </head>
 <body>
-<h1>Error: <fmt:message key="${errors['sql']}"/></h1>
+<h1>Error: <fmt:message key="${sql}"/></h1>
 </body>
 </html>

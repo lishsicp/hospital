@@ -312,15 +312,12 @@ FROM doctor d
 SELECT SQL_CALC_FOUND_ROWs * FROM patient WHERE doctor_id IS NULL ORDER BY lastname LIMIT 0, 5;
 
 SELECT *,
-       (SELECT count(id) FROM patient WHERE patient.doctor_id = d.id) as NumberOfPatients FROM doctor d WHERE category_id = ? ORDER BY NumberOfPatients LIMIT 5
+       (SELECT count(id) FROM patient WHERE patient.doctor_id = d.id) as NumberOfPatients FROM doctor d WHERE category_id = ? ORDER BY NumberOfPatients LIMIT 5;
 
 
 SELECT SQL_CALC_FOUND_ROWS h.id, h.diagnosis, h.patient_id
 FROM hospital_card h WHERE 3 IN (SELECT doctor_id FROM patient WHERE id=patient_id)
-ORDER BY (SELECT lastname FROM patient WHERE patient_id=patient.id) ASC
+ORDER BY (SELECT lastname FROM patient WHERE patient_id=patient.id)
 LIMIT 0, 5;
 
-SELECT SQL_CALC_FOUND_ROWS h.id, h.diagnosis, h.patient_id
-FROM hospital_card h WHERE %d IN (SELECT doctor_id FROM patient WHERE id=patient_id)
-ORDER BY (SELECT lastname FROM patient WHERE patient_id=patient.id) DESC
-LIMIT %d, %d;
+SELECT * FROM appointment WHERE type=null OR type=null OR type='OPERATION' AND 'ONGOING';

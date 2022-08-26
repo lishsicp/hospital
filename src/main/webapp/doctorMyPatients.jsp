@@ -81,7 +81,7 @@
           <c:if test="${currentPageNo != 1}">
             <li class="page-item">
               <a class="page-link"
-                 href="${pageContext.request.contextPath}/controller?action=my_patients&sorting_type=${sortBy}&page=${currentPageNo - 1}&recordsPerPage=${recordsPerPage}&no_doctor=${no_doctor}"
+                 href="${pageContext.request.contextPath}/controller?action=my_patients&page=${currentPageNo - 1}&recordsPerPage=${recordsPerPage}"
                  aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
               </a>
@@ -90,12 +90,12 @@
           <c:forEach begin="1" end="${noOfPages}" var="i">
             <c:choose>
               <c:when test="${currentPageNo eq i}">
-                <li class="page-item"><a class="page-link active" href="#">${i}</a></li>
+                <li class="page-item active"><a class="page-link" href="#">${i}</a></li>
               </c:when>
               <c:otherwise>
                 <li class="page-item">
                   <a class="page-link"
-                     href="${pageContext.request.contextPath}/controller?action=my_patients&sorting_type=${sortBy}&page=${i}&recordsPerPage=${recordsPerPage}&no_doctor=${no_doctor}">
+                     href="${pageContext.request.contextPath}/controller?action=my_patients&page=${i}&recordsPerPage=${recordsPerPage}">
                       ${i}
                   </a>
                 </li>
@@ -104,7 +104,7 @@
           </c:forEach>
           <c:if test="${currentPageNo lt noOfPages}">
             <li class="page-item">
-              <a class="page-link" href="${pageContext.request.contextPath}/controller?action=my_patients&sorting_type=${sortBy}&page=${currentPageNo + 1}&recordsPerPage=${recordsPerPage}&no_doctor=${no_doctor}" aria-label="Next">
+              <a class="page-link" href="${pageContext.request.contextPath}/controller?action=my_patients&page=${currentPageNo + 1}&recordsPerPage=${recordsPerPage}" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
               </a>
             </li>

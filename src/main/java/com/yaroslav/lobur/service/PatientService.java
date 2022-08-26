@@ -6,6 +6,7 @@ import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.dao.DaoFactory;
 import com.yaroslav.lobur.model.dao.HospitalCardDao;
 import com.yaroslav.lobur.model.dao.PatientDao;
+import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.HospitalCard;
 import com.yaroslav.lobur.model.entity.Patient;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
@@ -13,9 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 public class PatientService {
 
@@ -37,6 +36,10 @@ public class PatientService {
         try {
             con = daoFactory.open();
             patient = patientDao.findPatientById(con, id);
+            if (patient.getDoctor() != null) {
+                Doctor doctor = daoFactory.getDoctorDao().findDoctorById(con, patient.getDoctor().getId());
+                patient.setDoctor(doctor);
+            }
         } finally {
             daoFactory.close(con);
         }

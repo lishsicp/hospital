@@ -9,7 +9,8 @@ import java.util.Date;
 public class Appointment implements Entity {
 
   private long id;
-  private Date date;
+  private Date startDate;
+  private Date endDate;
   private String title;
   private AppointmentStatus status;
   private AppointmentType type;
@@ -32,14 +33,6 @@ public class Appointment implements Entity {
 
   public void setTitle(String title) {
     this.title = title;
-  }
-
-  public Date getDate() {
-    return date;
-  }
-
-  public void setDate(Date date) {
-    this.date = date;
   }
 
   public HospitalCard getHospitalCard() {
@@ -72,5 +65,35 @@ public class Appointment implements Entity {
 
   public void setUser(User user) {
     this.user = user;
+  }
+
+  public Date getStartDate() {
+    return startDate;
+  }
+
+  public void setStartDate(Date startDate) {
+    this.startDate = startDate;
+  }
+
+  public Date getEndDate() {
+    return endDate;
+  }
+
+  public void setEndDate(Date endDate) {
+    this.endDate = endDate;
+  }
+
+  @Override
+  public String toString() {
+    return "Appointment{" +
+            "id=" + id +
+            ", startDate=" + startDate +
+            ", endDate=" + endDate +
+            ", title='" + title + '\'' +
+            ", status=" + status +
+            ", type=" + type +
+            ", user=" + user +
+            ", hospitalCard=" + hospitalCard +
+            '}';
   }
 }

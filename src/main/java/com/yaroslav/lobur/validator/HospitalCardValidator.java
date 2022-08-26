@@ -23,7 +23,7 @@ public class HospitalCardValidator implements Validator<HospitalCard> {
     @Override
     public Map<String, String> validate(HospitalCard hospitalCard) {
         Map<String, String> errors = new HashMap<>();
-        if (hospitalCard.getDiagnosis() == null || hospitalCard.getDiagnosis().trim().isEmpty() || !hospitalCard.getDiagnosis().matches(RegexpManager.getProperty("user.first_name"))) {
+        if (hospitalCard.getDiagnosis() == null || hospitalCard.getDiagnosis().trim().isEmpty() || !hospitalCard.getDiagnosis().matches(RegexpManager.getProperty("doctor.diagnosis"))) {
             errors.put("diagnosis", "validation.hospitalCard.diagnosis");
         }
         return errors;

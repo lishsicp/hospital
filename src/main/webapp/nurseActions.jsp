@@ -4,8 +4,7 @@
 <div class="border-end bg-white" id="sidebar-wrapper">
     <div class="sidebar-heading border-bottom bg-light"><fmt:message key="header.name"/> | <fmt:message key="header.menu"/> </div>
     <div class="list-group list-group-flush">
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="${pageContext.request.contextPath}/controller?action=my_patients"><fmt:message key="doctor.my.patients"/></a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="${pageContext.request.contextPath}/controller?action=appointments"><fmt:message key="doctor.appointments"/></a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="${pageContext.request.contextPath}/controller?action=nurse_appointments"><fmt:message key="doctor.appointments"/></a>
     </div>
 </div>
 <script>

@@ -78,4 +78,18 @@ public class Patient implements Entity {
   public void setEmail(String email) {
     this.email = email;
   }
+
+  @Override
+  public String toString() {
+    return "Patient{" +
+            "id=" + id +
+            ", status=" + status +
+            ", doctor=" + doctor +
+            ", firstname='" + firstname + '\'' +
+            ", lastname='" + lastname + '\'' +
+            ", dateOfBirth=" + dateOfBirth +
+            ", gender='" + gender + '\'' +
+            ", email='" + email + '\'' +
+            '}';
+  }
 }

@@ -31,4 +31,12 @@ public class HospitalCard implements Entity {
     this.patient = patient;
   }
 
+  @Override
+  public String toString() {
+    return "HospitalCard{" +
+            "id=" + id +
+            ", diagnosis='" + diagnosis + '\'' +
+            ", patient=" + patient +
+            '}';
+  }
 }

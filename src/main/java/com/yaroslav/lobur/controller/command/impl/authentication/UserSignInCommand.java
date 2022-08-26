@@ -18,8 +18,6 @@ public class UserSignInCommand implements Command {
 
     private static final Logger logger = LoggerFactory.getLogger(UserSignInCommand.class);
 
-    private static final String ACTIONS = "actions";
-
     @Override
     public CommandResult execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
@@ -43,6 +41,7 @@ public class UserSignInCommand implements Command {
                 return new CommandResult(request.getRequestURI() + "?action=my_patients", true);
             }
             if (user.getRole().getRoleId() == 3) {
+                return new CommandResult(request.getRequestURI() + "?action=nurse_appointments", true);
             }
             return new CommandResult(request.getRequestURI() + "?action=view_user&user_id=" + id, true);
         } catch (DBExceptionMessages e) {

@@ -1,6 +1,7 @@
 package com.yaroslav.lobur.controller.listener;
 
 import com.yaroslav.lobur.model.dao.*;
+import com.yaroslav.lobur.service.AppointmentService;
 import com.yaroslav.lobur.service.DoctorService;
 import com.yaroslav.lobur.service.PatientService;
 import com.yaroslav.lobur.service.UserService;
@@ -58,10 +59,12 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
         UserService userService = new UserService();
         PatientService patientService = new PatientService();
         DoctorService doctorService = new DoctorService();
+        AppointmentService appointmentService = new AppointmentService();
         // Attributes
         ctx.setAttribute("userService", userService);
         ctx.setAttribute("patientService", patientService);
         ctx.setAttribute("doctorService", doctorService);
+        ctx.setAttribute("appointmentService", appointmentService);
     }
 
     public void initializeLogger(ServletContext ctx) {
@@ -74,10 +77,11 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         ServletContext servletContext = sce.getServletContext();
+        DaoFactory.getDaoFactory().close(DaoFactory.getDaoFactory().open());
         servletContext.removeAttribute(DATASOURCE_PARAM);
         servletContext.removeAttribute("userService");
         servletContext.removeAttribute("patientService");
         servletContext.removeAttribute("doctorService");
-
+        servletContext.removeAttribute("appointmentService");
     }
 }

@@ -4,8 +4,6 @@ import com.yaroslav.lobur.model.dao.GenericDao;
 import com.yaroslav.lobur.model.dao.HospitalCardDao;
 import com.yaroslav.lobur.model.entity.HospitalCard;
 import com.yaroslav.lobur.model.entity.Patient;
-import com.yaroslav.lobur.model.entity.enums.OrderBy;
-import org.apache.commons.lang.math.NumberUtils;
 
 import java.sql.*;
 import java.util.List;
@@ -64,7 +62,7 @@ public class MySqlHospitalCardDao extends GenericDao<HospitalCard> implements Ho
     }
 
     public List<HospitalCard> findAllHospitalCards(Connection connection) {
-        return findAll(connection,"SELECT * FORM hospital_card");
+        return findAll(connection,"SELECT * FROM hospital_card");
     }
 
     @Override

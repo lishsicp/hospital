@@ -1,6 +1,5 @@
 package com.yaroslav.lobur.model.dao;
 
-import com.yaroslav.lobur.exceptions.DBExceptionMessages;
 import com.yaroslav.lobur.exceptions.EntityNotFoundException;
 import com.yaroslav.lobur.exceptions.InputErrorsMessagesException;
 import com.yaroslav.lobur.exceptions.UnknownSqlException;
@@ -77,6 +76,10 @@ public abstract class GenericDao<T extends Entity>  {
         ResultSet rs = null;
         int pos = 1;
         for (V value : values) {
+            if (value == null) {
+                ps.setNull(pos++, Types.VARCHAR);
+                continue;
+            }
             switch (value.getClass().getSimpleName()) {
                 case "Integer" -> ps.setInt(pos, (Integer) value);
                 case "Long" -> ps.setLong(pos, (Long) value);
@@ -85,8 +88,8 @@ public abstract class GenericDao<T extends Entity>  {
                 default -> throw new IllegalArgumentException();
             }
             ++pos;
-            rs = ps.executeQuery();
         }
+        rs = ps.executeQuery();
         return rs;
     }
 
@@ -122,7 +125,7 @@ public abstract class GenericDao<T extends Entity>  {
                     return rs.getLong(1);
                 }
             }
-            throw new InputErrorsMessagesException(Map.of("insert_error","sql.insert"));
+            throw new InputErrorsMessagesException(Map.of("sql","sql.insert"));
         } catch (SQLException e) {
             throw new UnknownSqlException(e.getMessage());
         } finally {
@@ -136,7 +139,7 @@ public abstract class GenericDao<T extends Entity>  {
             ps = connection.prepareStatement(sql);
             ps.executeUpdate();
         } catch (SQLIntegrityConstraintViolationException e) {
-            throw new DBExceptionMessages(List.of("sql.data_integrity"));
+            throw new InputErrorsMessagesException(Map.of("sql","sql.data_integrity"));
         } catch (SQLException e) {
             throw new UnknownSqlException(e.getMessage(), e.getCause());
         } finally {
@@ -155,7 +158,7 @@ public abstract class GenericDao<T extends Entity>  {
             }
             mapFromEntity(ps, item);
             if (ps.executeUpdate() == 0)
-                throw new DBExceptionMessages(List.of("sql.not_updated"));
+                throw new InputErrorsMessagesException(Map.of("sql","sql.not_updated"));
         } catch (SQLException e) {
             throw new UnknownSqlException(e.getMessage(), e.getCause());
         } finally {
@@ -167,7 +170,7 @@ public abstract class GenericDao<T extends Entity>  {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             mapFromEntity(ps, item);
             if (ps.executeUpdate() == 0)
-                throw new DBExceptionMessages(List.of("sql.not_updated"));
+                throw new InputErrorsMessagesException(Map.of("sql","sql.not_updated"));
         } catch (SQLException e) {
             throw new UnknownSqlException(e.getMessage(), e.getCause());
         }

@@ -39,7 +39,7 @@
                 <c:if test="${current_user ne null}">
                     <li class="nav-item h-100 dropdown">
                         <a class="nav-link dropdown-toggle" style="margin-bottom: 0;" id="navbarDropdown" href="#" role="button"
-                           data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                           data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="${pageContext.request.contextPath}/controller?action=view_user&user_id=${current_user.id}"><fmt:message key="profile"/></a>
                             <a class="dropdown-item" href="#!">Another action</a>
