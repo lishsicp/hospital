@@ -1,16 +1,18 @@
 package com.yaroslav.lobur.service;
 
 import com.yaroslav.lobur.exceptions.EntityNotFoundException;
+import com.yaroslav.lobur.exceptions.InputErrorsMessagesException;
 import com.yaroslav.lobur.model.dao.DaoFactory;
-import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.HospitalCard;
 import com.yaroslav.lobur.model.entity.Patient;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
+import com.yaroslav.lobur.validator.HospitalCardValidator;
+import com.yaroslav.lobur.validator.PatientValidator;
 import db.MySqlDatasource;
 import org.junit.jupiter.api.*;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,12 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class PatientServiceTest {
 
     static PatientService patientService;
-    static DaoFactory daoFactory;
 
     @BeforeAll
     static void setUp() throws SQLException, FileNotFoundException {
         DaoFactory.init(MySqlDatasource.getDataSource());
-        daoFactory = DaoFactory.getDaoFactory();
         patientService = new PatientService();
         MySqlDatasource.resetDatabase();
     }
@@ -56,10 +56,15 @@ class PatientServiceTest {
         long doctorId = 1;
         List<HospitalCard> list = patientService.getAllHospitalCardSortedByDoctorId(doctorId, 0, 100);
         assertEquals(doctorId, list.get(0).getPatient().getDoctor().getId());
+        assertEquals(list.size(), patientService.getNumberOfRecordsHC());
     }
 
     @Test
     void getAllPatientsSorted() {
+        List<Patient> patients = patientService.getAllPatientsSorted(OrderBy.NAME, 0, 100);
+        List<Patient> patientsSorted = new ArrayList<>(patients);
+        patientsSorted.sort(Comparator.comparing(Patient::getLastname));
+        assertEquals(patients, patientsSorted);
     }
 
     @Test
@@ -69,29 +74,54 @@ class PatientServiceTest {
     }
 
     @Test
+    @Order(1)
     void addPatient() {
-        Patient validPatient = new Patient();
-        //assertEquals();
+        Patient validPatient;
+        validPatient = patientService.getPatientById(1);
+        Patient invalidPatient = validPatient;
+        assertEquals(invalidPatient.getId(), validPatient.getId());
+        invalidPatient.setId(0);
+        assertThrows(InputErrorsMessagesException.class, () -> patientService.addPatient(invalidPatient));
+        validPatient.setEmail("test@gg.com");
+        assertEquals(0, PatientValidator.getInstance().validate(validPatient).size());
+        assertEquals(5, PatientValidator.getInstance().validate(new Patient()).size());
+        patientService.addPatient(validPatient);
+        invalidPatient.setEmail("test");
+        assertEquals(1, PatientValidator.getInstance().validate(invalidPatient).size());
     }
 
     @Test
-    void deletePatient() {
-    }
-
-    @Test
+    @Order(2)
     void updatePatient() {
+        Patient patient = patientService.getPatientById(3);
+        patient.setLastname("Test");
+        patientService.updatePatient(patient);
+        assertEquals(patient.getLastname(), patientService.getPatientById(3).getLastname());
+        patient.setEmail("test@gg.com");
+        assertThrows(InputErrorsMessagesException.class, () -> patientService.updatePatient(patient));
+        patient.setEmail("wrong email");
+        assertTrue(PatientValidator.getInstance().validate(patient).containsKey("email"));
+    }
+
+
+    @Test
+    @Order(3)
+    void deletePatient() {
+        var before = patientService.getAllPatients();
+        patientService.deletePatient(4);
+        assertEquals(before.size() - 1, patientService.getAllPatients().size());
     }
 
     @Test
     void updateHospitalCard() {
+        HospitalCard hospitalCard = patientService.getHospitalCardById(1);
+        assertEquals(0, HospitalCardValidator.getInstance().validate(hospitalCard).size());
+        hospitalCard.setDiagnosis("Test");
+        patientService.updateHospitalCard(hospitalCard);
+        assertEquals(hospitalCard.getDiagnosis(), patientService.getHospitalCardById(1).getDiagnosis());
+        hospitalCard.setDiagnosis(null);
+        assertEquals(1, HospitalCardValidator.getInstance().validate(hospitalCard).size());
     }
 
-    @Test
-    void getNumberOfRecords() {
-    }
-
-    @Test
-    void getNumberOfRecordsHC() {
-    }
 
 }

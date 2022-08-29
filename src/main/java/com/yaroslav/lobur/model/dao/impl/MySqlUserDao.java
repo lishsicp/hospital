@@ -96,7 +96,7 @@ public class MySqlUserDao extends GenericDao<User> implements UserDao {
             if (rs.getInt(1) > 0) {
                 errors.put("phone", "validation.user.phone.exist");
             }
-            if (!errors.isEmpty())
+            if (errors.size() > 0)
                 throw new InputErrorsMessagesException(errors);
         } catch (SQLException e) {
             throw new UnknownSqlException(e.getMessage(), e.getCause());

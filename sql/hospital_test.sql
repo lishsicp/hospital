@@ -217,18 +217,18 @@ VALUES (1, 'pediatrician'),   -- 1
 INSERT INTO hospital_test.user
 (login, password, firstname, lastname, date_of_birth, gender, email, phone, address, locale, role_id)
 VALUES ('admin', '70ccd9007338d6d81dd3b6271621b9cf9a97ea00', 'Ярослав', 'Лобур', '2001-07-25', 'MALE',
-        'lobur13@gmail.com', '(063) 666-12-39', '', 'UK', 1);
+        'lobur13@gmail.com', '(063)-666-12-39', '', 'UK', 1);
 
 
 
 INSERT INTO hospital_test.user
 (login, password, firstname, lastname, date_of_birth, gender, email, phone, address, locale, role_id)
 VALUES ('micx72', '70ccd9007338d6d81dd3b6271621b9cf9a97ea00', 'Михайло', 'Кожумяка', '1972-05-23', 'MALE',
-        'michael.zh@gmail.com', '(063) 255-12-39', 'вул.Наукова 45, 3', 'UK', 2),
+        'michael.zh@gmail.com', '(063)-255-12-39', 'вул.Наукова 45, 3', 'UK', 2),
        ('yuriy64', '70ccd9007338d6d81dd3b6271621b9cf9a97ea00', 'Юрий', 'Петрулько', '1964-05-23', 'MALE',
-        'yuriyp@gmail.com', '(099) 991-24-26', 'вул. Січових Стрільців 23б', 'UK', 2),
+        'yuriyp@gmail.com', '(099)-991-24-26', 'вул. Січових Стрільців 23б', 'UK', 2),
        ('johnyanderson', '70ccd9007338d6d81dd3b6271621b9cf9a97ea00', 'Johny', 'Anderson', '1998-11-05', 'MALE',
-        'johny.and@gmail.com', '(050) 485-23-33', 'First Moon st. 4', 'UK', 2);
+        'johny.and@gmail.com', '(050)-485-23-33', 'First Moon st. 4', 'UK', 2);
 
 
 INSERT INTO hospital_test.doctor

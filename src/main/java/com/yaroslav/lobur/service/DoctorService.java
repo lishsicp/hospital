@@ -8,15 +8,11 @@ import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
 import com.yaroslav.lobur.model.entity.enums.Role;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.util.List;
 
 public class DoctorService {
-
-    private static final Logger logger = LoggerFactory.getLogger(DoctorService.class);
 
     private static final UserDao userDao;
     private static final CategoryDao categoryDao;
@@ -72,12 +68,9 @@ public class DoctorService {
             categories = categoryDao.findAllCategories(con);
             setDoctorFields(doctors, users, categories);
             return doctors;
-        } catch (UnknownSqlException e) {
-            logger.error("", e);
         } finally {
             daoFactory.close(con);
         }
-        return null;
     }
 
     public List<Doctor> getAllDoctorsOrderBy(OrderBy order, int offset, int noOfRecords) {

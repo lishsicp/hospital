@@ -95,7 +95,7 @@ public class PatientService {
 
     public List<Patient> getAllPatientsSorted(OrderBy order, int offset, int noOfRecords) {
         Connection con = null;
-        List<Patient> patients = null;
+        List<Patient> patients;
         try {
             con = daoFactory.open();
             patients =  patientDao.findPatientsOrderBy(con, order, offset, noOfRecords);
@@ -107,7 +107,7 @@ public class PatientService {
 
     public List<Patient> getPatientsWithoutDoctor(OrderBy order, int offset, int noOfRecords) {
         Connection con = null;
-        List<Patient> patients = null;
+        List<Patient> patients;
         try {
             con = daoFactory.open();
             patients =  patientDao.findPatientsWithoutDoctor(con, order, offset, noOfRecords);
@@ -128,11 +128,11 @@ public class PatientService {
             hc.setPatient(patient);
             hospitalCardDao.insertHospitalCard(con, hc);
             daoFactory.commit(con);
-        } catch (UnknownSqlException e) {
-            daoFactory.rollback(con);
-            throw e;
         } catch (InputErrorsMessagesException e) {
             logger.debug("Email exist: {}", patient.getEmail());
+            daoFactory.rollback(con);
+            throw e;
+        } catch (UnknownSqlException e) {
             daoFactory.rollback(con);
             throw e;
         } finally {

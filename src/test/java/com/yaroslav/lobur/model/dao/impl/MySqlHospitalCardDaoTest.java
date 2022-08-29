@@ -28,11 +28,6 @@ class MySqlHospitalCardDaoTest {
         MySqlDatasource.resetDatabase();
     }
 
-    @AfterAll
-    static void tearDown() throws SQLException, FileNotFoundException {
-        MySqlDatasource.resetDatabase();
-    }
-
     @Test
     @Order(1)
     void insertHospitalCard() throws SQLException {

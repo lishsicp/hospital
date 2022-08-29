@@ -268,3 +268,4 @@ VALUES (1, curdate(), adddate(curdate(), interval 30 day), 'Операция п�
        (2, curdate(), adddate(curdate(), interval 14 day), 'Таблетки Септефрил', 'ONGOING', 'MEDICATION', 4, 2),
        (3, curdate(), adddate(curdate(), interval 21 day), 'Холодний компрес, перевязка', 'ONGOING', 'PROCEDURE', 4,
         3);
+DELETE FROM patient WHERE id='g';

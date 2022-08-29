@@ -29,11 +29,10 @@ class MySqlUserDaoTest {
     static UserDao userDao;
 
     @BeforeAll
-    static void setUp() throws SQLException, FileNotFoundException {
+    static void setUp() {
         DaoFactory.init(MySqlDatasource.getDataSource());
         daoFactory = DaoFactory.getDaoFactory();
         userDao = daoFactory.getUserDao();
-        MySqlDatasource.resetDatabase();
     }
 
     @Test
@@ -122,10 +121,5 @@ class MySqlUserDaoTest {
         } catch (InputErrorsMessagesException e) {
             assertEquals(3, e.getErrorMessageMap().size());
         }
-    }
-
-    @AfterAll
-    static void cleanUp() throws SQLException, FileNotFoundException {
-        MySqlDatasource.resetDatabase();
     }
 }

@@ -4,19 +4,15 @@ import com.yaroslav.lobur.exceptions.EntityNotFoundException;
 import com.yaroslav.lobur.model.dao.AppointmentDao;
 import com.yaroslav.lobur.model.dao.DaoFactory;
 import com.yaroslav.lobur.model.entity.Appointment;
-import com.yaroslav.lobur.model.entity.HospitalCard;
-import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.model.entity.enums.AppointmentStatus;
 import com.yaroslav.lobur.model.entity.enums.AppointmentType;
 import db.MySqlDatasource;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.*;
 
 import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

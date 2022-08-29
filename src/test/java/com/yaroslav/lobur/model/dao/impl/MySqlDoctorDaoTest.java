@@ -10,7 +10,6 @@ import com.yaroslav.lobur.model.entity.enums.OrderBy;
 import db.MySqlDatasource;
 import org.junit.jupiter.api.*;
 
-import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,9 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestClassOrder(ClassOrderer.OrderAnnotation.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Order(1)
 class MySqlDoctorDaoTest {
 
     static DaoFactory daoFactory;

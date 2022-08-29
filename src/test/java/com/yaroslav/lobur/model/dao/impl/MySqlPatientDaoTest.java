@@ -2,12 +2,14 @@ package com.yaroslav.lobur.model.dao.impl;
 
 import com.yaroslav.lobur.exceptions.EntityNotFoundException;
 import com.yaroslav.lobur.exceptions.InputErrorsMessagesException;
+import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.dao.DaoFactory;
 import com.yaroslav.lobur.model.dao.PatientDao;
 import com.yaroslav.lobur.model.entity.Patient;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
 import db.MySqlDatasource;
 import org.junit.jupiter.api.*;
+import org.mockito.Mock;
 
 import java.io.FileNotFoundException;
 import java.sql.Connection;
@@ -31,15 +33,12 @@ class MySqlPatientDaoTest {
         MySqlDatasource.resetDatabase();
     }
 
-//    @AfterAll
-//    static void cleanUp() throws SQLException, FileNotFoundException {
-//        MySqlDatasource.resetDatabase();
-//    }
-
     @Test
     void findPatientById_ThrowsException_IfPatientDoNotExist() throws SQLException {
         try (Connection con = daoFactory.open()) {
             assertThrows(EntityNotFoundException.class, () -> patientDao.findPatientById(con, 1000));
+            con.close();
+            assertThrows(UnknownSqlException.class, () -> patientDao.findPatientById(con, 1));
         }
     }
 
@@ -57,6 +56,8 @@ class MySqlPatientDaoTest {
         try (Connection con = daoFactory.open()) {
             List<Patient> patientList = patientDao.findPatientsWithoutDoctor(con, OrderBy.NAME, 0, 5);
             assertEquals(1, patientList.size());
+            con.close();
+            assertThrows(UnknownSqlException.class, () -> patientDao.findPatientsWithoutDoctor(con, OrderBy.NAME, 0, 100));
         }
     }
 
@@ -67,6 +68,8 @@ class MySqlPatientDaoTest {
             List<Patient> patientsSorted = new ArrayList<>(patients);
             patientsSorted.sort((p1, p2) -> p1.getLastname().compareToIgnoreCase(p2.getLastname()));
             assertEquals(patientsSorted, patients);
+            con.close();
+            assertThrows(UnknownSqlException.class, () -> patientDao.findPatientsOrderBy(con, OrderBy.NAME, 0, 100));
         }
     }
 
@@ -75,6 +78,8 @@ class MySqlPatientDaoTest {
         try (Connection con = daoFactory.open()) {
             List<Patient> patients = patientDao.findAllPatients(con);
             assertEquals(3, patients.size());
+            con.close();
+            assertThrows(UnknownSqlException.class, ()-> patientDao.findAllPatients(con));
         }
     }
 
@@ -87,6 +92,8 @@ class MySqlPatientDaoTest {
             long id = patientDao.insertPatient(con, patient);
             Patient insertedPatient = patientDao.findPatientById(con, id);
             assertEquals(patient.getEmail(), insertedPatient.getEmail());
+            con.close();
+            assertThrows(UnknownSqlException.class, () -> patientDao.insertPatient(con, patient));
         }
     }
 
@@ -98,6 +105,8 @@ class MySqlPatientDaoTest {
             patientDao.deletePatient(con, 4);
             List<Patient> patientsAfterDeleting = patientDao.findAllPatients(con);
             assertEquals(patients.size() - 1, patientsAfterDeleting.size());
+            con.close();
+            assertThrows(UnknownSqlException.class, () -> patientDao.deletePatient(con, 2));
         }
     }
 
@@ -111,6 +120,8 @@ class MySqlPatientDaoTest {
             patientDao.updatePatient(con, patientToUpdate);
             Patient updatedPatient = patientDao.findPatientById(con, 1);
             assertEquals(patientToUpdate.getLastname(), updatedPatient.getLastname());
+            con.close();
+            assertThrows(UnknownSqlException.class, () -> patientDao.updatePatient(con, patientToUpdate));
         }
     }
 

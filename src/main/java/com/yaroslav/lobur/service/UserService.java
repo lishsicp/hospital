@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 public class UserService {
@@ -37,6 +36,7 @@ public class UserService {
             return id;
         } catch (InputErrorsMessagesException | UnknownSqlException e) {
             e.printStackTrace();
+            daoFactory.rollback(con);
             throw e;
         } finally {
             daoFactory.close(con);
@@ -61,14 +61,22 @@ public class UserService {
     }
 
     public User getUserById(long id) {
-        try(Connection con = daoFactory.open()) {
+        Connection con = null;
+        try {
+            con = daoFactory.open();
             return userDao.findUserById(con, id);
-        } catch (EntityNotFoundException | UnknownSqlException | SQLException e) {
-            throw new DBExceptionMessages(List.of("user.not_found"));
+        } finally {
+            daoFactory.close(con);
         }
     }
 
     public List<User> getUsersByRole(Role role) {
-        return userDao.findAllByRole(daoFactory.open(), role);
+        Connection con = null;
+        try {
+            con = daoFactory.open();
+            return userDao.findAllByRole(con, role);
+        } finally {
+            daoFactory.close(con);
+        }
     }
 }
