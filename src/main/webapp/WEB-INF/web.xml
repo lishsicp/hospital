@@ -14,6 +14,10 @@
         <param-name>log4j-config</param-name>
         <param-value>WEB-INF/log4j.xml</param-value>
     </context-param>
+    <context-param>
+        <param-name>security-config</param-name>
+        <param-value>WEB-INF/security.properties</param-value>
+    </context-param>
 
     <session-config>
         <session-timeout>60</session-timeout>
@@ -26,6 +30,10 @@
     <error-page>
     	<error-code>404</error-code>
         <location>/error404.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>401</error-code>
+        <location>/accessError.jsp</location>
     </error-page>
 
     <error-page>

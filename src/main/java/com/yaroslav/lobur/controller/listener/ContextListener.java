@@ -5,6 +5,7 @@ import com.yaroslav.lobur.service.AppointmentService;
 import com.yaroslav.lobur.service.DoctorService;
 import com.yaroslav.lobur.service.PatientService;
 import com.yaroslav.lobur.service.UserService;
+import com.yaroslav.lobur.utils.SecurityMapInitializer;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -19,6 +20,10 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 
 @WebListener
 public class ContextListener implements ServletContextListener, HttpSessionListener {
@@ -33,6 +38,8 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
         initializeLogger(ctx);
         logger.debug("Logger initialized");
         logger.trace("Context initialization started");
+        initializeSecurityMap(ctx);
+        logger.trace("Security initialized");
         initDatasource(ctx);
         logger.debug("DataSource initialized");
         initServices(ctx);
@@ -83,5 +90,18 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
         servletContext.removeAttribute("patientService");
         servletContext.removeAttribute("doctorService");
         servletContext.removeAttribute("appointmentService");
+    }
+
+    public void initializeSecurityMap(ServletContext ctx) {
+        Properties properties = new Properties();
+        String securityConfigFile = ctx.getInitParameter("security-config");
+        String fullPath = ctx.getRealPath("") + File.separator + securityConfigFile;
+        try (FileInputStream fis = new FileInputStream(fullPath);) {
+            properties.load(fis);
+            ctx.setAttribute("securityMap", SecurityMapInitializer.initialize(properties));
+        } catch (IOException e) {
+            logger.error("Security wasn't initialized, Properties not found" + e);
+            throw new RuntimeException();
+        }
     }
 }

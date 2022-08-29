@@ -34,7 +34,7 @@ public class MyPatientsCommand implements Command {
         request.setAttribute("recordsPerPage", recordsPerPage);
         try {
             int offset = Math.max((pageNo - 1) * recordsPerPage, 0);
-            var hospitalCards = patientService.getAllHospitalCardSorted(currentDoctor.getId(), offset, recordsPerPage);
+            var hospitalCards = patientService.getAllHospitalCardSortedByDoctorId(currentDoctor.getId(), offset, recordsPerPage);
             int noOfRecords = patientService.getNumberOfRecordsHC();
             int noOfPages = (int) Math.ceil(noOfRecords * 1.0 / recordsPerPage);
             request.setAttribute("noOfPages", noOfPages);

@@ -38,6 +38,7 @@
           <th scope="col"><fmt:message key="signup.bday"/></th>
           <th scope="col"><fmt:message key="signup.gender"/></th>
           <th scope="col"><fmt:message key="signup.email"/></th>
+          <th scope="col"><fmt:message key="patient.list.status"/></th>
           <th scope="col"><fmt:message key="doctor.my.patients.diagnose"/></th>
           <th scope="col"><fmt:message key="doctor.my.patients.details"/></th>
         </tr>
@@ -57,6 +58,7 @@
                                                                      locale="${sessionScope.language}"/></th>
                 <th class="align-middle" scope="col"><fmt:message key="gender.${card.patient.gender}"/></th>
                 <th class="align-middle" scope="col">${card.patient.email}</th>
+                <th class="align-middle" scope="col"><fmt:message key="patient.status.${card.patient.status}"/></th>
                 <th class="align-middle" scope="col">
                   <c:if test="${card.diagnosis == null}">
                     <fmt:message key="no.diagnosis"/>
@@ -90,7 +92,7 @@
           <c:forEach begin="1" end="${noOfPages}" var="i">
             <c:choose>
               <c:when test="${currentPageNo eq i}">
-                <li class="page-item active"><a class="page-link" href="#">${i}</a></li>
+                <li class="page-item active"><a class="page-link active" href="#">${i}</a></li>
               </c:when>
               <c:otherwise>
                 <li class="page-item">

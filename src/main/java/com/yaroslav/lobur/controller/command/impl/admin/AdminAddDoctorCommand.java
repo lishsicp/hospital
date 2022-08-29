@@ -5,11 +5,7 @@ import com.yaroslav.lobur.exceptions.InputErrorsMessagesException;
 import com.yaroslav.lobur.model.entity.Category;
 import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.User;
-import com.yaroslav.lobur.model.entity.enums.Gender;
-import com.yaroslav.lobur.model.entity.enums.Locale;
-import com.yaroslav.lobur.model.entity.enums.Role;
 import com.yaroslav.lobur.service.DoctorService;
-import com.yaroslav.lobur.service.PatientService;
 import com.yaroslav.lobur.utils.CommandResult;
 import com.yaroslav.lobur.utils.PagePathManager;
 import com.yaroslav.lobur.utils.PasswordEncryptor;
@@ -22,7 +18,6 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Date;
 import java.util.Comparator;
 import java.util.List;
 

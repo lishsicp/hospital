@@ -44,6 +44,6 @@ public class MakeAppointmentCommand implements Command {
             logger.error("{}", e.getMessage());
             request.setAttribute("sql", "sql.error");
         }
-        return new CommandResult("/doctorListAppointments.jsp");
+        return new CommandResult(request.getRequestURI() + "?action=appointments", true);
     }
 }

@@ -4,6 +4,7 @@ import com.yaroslav.lobur.exceptions.*;
 import com.yaroslav.lobur.model.dao.GenericDao;
 import com.yaroslav.lobur.model.dao.UserDao;
 import com.yaroslav.lobur.model.entity.User;
+import com.yaroslav.lobur.model.entity.enums.Locale;
 import com.yaroslav.lobur.model.entity.enums.Role;
 
 import java.sql.*;
@@ -13,9 +14,9 @@ import java.util.Map;
 
 public class MySqlUserDao extends GenericDao<User> implements UserDao {
 
-    private static final String FIND_ALL_USERS = "SElECT * FROM hospital.user";
-    private static final String INSERT_USER = "INSERT INTO hospital.user(`login`, `password`, `firstname`, `lastname`, `date_of_birth`, `gender`, `email`, `phone`, `address`, `locale`, `role_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    public static final String FIND_USER_BY_EMAIL = "SELECT * FROM hospital.user WHERE email = ?";
+    private static final String FIND_ALL_USERS = "SElECT * FROM user";
+    private static final String INSERT_USER = "INSERT INTO user(`login`, `password`, `firstname`, `lastname`, `date_of_birth`, `gender`, `email`, `phone`, `address`, `locale`, `role_id`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public static final String FIND_USER_BY_EMAIL = "SELECT * FROM user WHERE email = ?";
     private static final String CHECK_UNIQUE_FIELDS = "SELECT count(id) FROM user WHERE login = ? AND id != ? UNION ALL " +
             "SELECT count(id) FROM user WHERE email = ? AND id != ? UNION ALL " +
             "SELECT count(id) FROM user WHERE phone = ? AND id != ?";
@@ -54,7 +55,7 @@ public class MySqlUserDao extends GenericDao<User> implements UserDao {
 
     @Override
     public void updateUser(Connection connection, User user) {
-        updateByField(connection, "", user, 6, user.getId());
+        updateEntity(connection, "UPDATE user SET  login = ?, password = ?, firstname = ?, lastname = ?, date_of_birth = ?, gender = ?, email = ?, phone = ?, address = ?, locale = ?, role_id = ? WHERE id = " + user.getId(), user);
     }
 
     @Override
@@ -116,6 +117,7 @@ public class MySqlUserDao extends GenericDao<User> implements UserDao {
         String phone = rs.getString("phone");
         String address = rs.getString("address");
         int roleId = rs.getInt("role_id");
+        String locale = rs.getString("locale");
 
         user.setId(id);
         user.setLogin(login);
@@ -126,6 +128,7 @@ public class MySqlUserDao extends GenericDao<User> implements UserDao {
         user.setGender(gender);
         user.setEmail(email);
         user.setPhone(phone);
+        user.setLocale(Locale.valueOf(locale));
         user.setAddress(address);
         user.setRole(Role.getById(roleId));
         return user;

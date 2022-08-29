@@ -9,6 +9,7 @@ import com.yaroslav.lobur.model.dao.PatientDao;
 import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.HospitalCard;
 import com.yaroslav.lobur.model.entity.Patient;
+import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,8 @@ public class PatientService {
             patient = patientDao.findPatientById(con, id);
             if (patient.getDoctor() != null) {
                 Doctor doctor = daoFactory.getDoctorDao().findDoctorById(con, patient.getDoctor().getId());
+                User user = daoFactory.getUserDao().findUserById(con, doctor.getUser().getId());
+                doctor.setUser(user);
                 patient.setDoctor(doctor);
             }
         } finally {
@@ -70,7 +73,7 @@ public class PatientService {
         return patients;
     }
 
-    public List<HospitalCard> getAllHospitalCardSorted(long id, int offset, int noOfRecords) {
+    public List<HospitalCard> getAllHospitalCardSortedByDoctorId(long id, int offset, int noOfRecords) {
         Connection con = null;
         List<HospitalCard> hospitalCards;
         try {

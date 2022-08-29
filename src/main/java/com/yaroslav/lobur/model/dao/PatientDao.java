@@ -1,6 +1,5 @@
 package com.yaroslav.lobur.model.dao;
 
-import com.yaroslav.lobur.model.entity.HospitalCard;
 import com.yaroslav.lobur.model.entity.Patient;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
 
@@ -10,7 +9,6 @@ import java.util.List;
 public interface PatientDao {
     Patient findPatientById(Connection connection, long id);
     List<Patient> findPatientsWithoutDoctor(Connection connection, OrderBy order, int offset, int noOfRecords);
-    List<Patient> findPatientsWithDoctor(Connection connection);
     List<Patient> findPatientsOrderBy(Connection connection, OrderBy order, int offset, int noOfRecords);
 
     List<Patient> findAllPatients(Connection connection);

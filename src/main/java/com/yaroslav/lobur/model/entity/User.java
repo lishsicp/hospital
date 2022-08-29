@@ -5,6 +5,7 @@ import com.yaroslav.lobur.model.entity.enums.Role;
 
 import java.io.Serial;
 import java.util.Date;
+import java.util.Objects;
 
 public class User implements Entity {
 
@@ -156,5 +157,18 @@ public class User implements Entity {
                 ", locale='" + locale + '\'' +
                 ", roleId=" + role +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id && Objects.equals(login, user.login) && Objects.equals(password, user.password) && Objects.equals(firstname, user.firstname) && Objects.equals(lastname, user.lastname) && Objects.equals(dateOfBirth, user.dateOfBirth) && Objects.equals(gender, user.gender) && Objects.equals(email, user.email) && Objects.equals(phone, user.phone) && Objects.equals(address, user.address) && locale == user.locale && role == user.role;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, login, password, firstname, lastname, dateOfBirth, gender, email, phone, address, locale, role);
     }
 }

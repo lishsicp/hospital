@@ -7,7 +7,6 @@ import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
 
-import javax.print.Doc;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,7 +50,7 @@ public class MySqlDoctorDao extends GenericDao<Doctor> implements DoctorDao {
     }
 
     public List<Doctor> findAllDoctors(Connection con) {
-        return findAll(con, "SELECT *" + ", " + SELECT_NUMBER_OF_PATIENTS + "FROM doctor d");
+        return findAll(con, "SELECT SQL_CALC_FOUND_ROWS *" + ", " + SELECT_NUMBER_OF_PATIENTS + "FROM doctor d");
     }
 
     @Override
@@ -63,7 +62,7 @@ public class MySqlDoctorDao extends GenericDao<Doctor> implements DoctorDao {
     }
 
     public List<Doctor> findDoctorsByCategory(Connection connection, long categoryId) {
-        return findEntities(connection, "SELECT *, " + SELECT_NUMBER_OF_PATIENTS + "FROM doctor d WHERE category_id = ? ORDER BY NumberOfPatients LIMIT 5", categoryId);
+        return findEntities(connection, "SELECT SQL_CALC_FOUND_ROWS *, " + SELECT_NUMBER_OF_PATIENTS + "FROM doctor d WHERE category_id = ? ORDER BY NumberOfPatients LIMIT 5", categoryId);
     }
 
     @Override
@@ -83,7 +82,7 @@ public class MySqlDoctorDao extends GenericDao<Doctor> implements DoctorDao {
 
     @Override
     public long insertDoctor(Connection con, Doctor doctor) {
-        return insertEntity(con, "INSERT INTO hospital.doctor (category_id, user_id) VALUES (?, ?)", doctor);
+        return insertEntity(con, "INSERT INTO doctor (category_id, user_id) VALUES (?, ?)", doctor);
     }
 }
 

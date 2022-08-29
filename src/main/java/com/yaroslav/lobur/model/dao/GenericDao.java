@@ -147,25 +147,6 @@ public abstract class GenericDao<T extends Entity>  {
         }
     }
 
-    protected <V> void updateByField(Connection connection, String sql, T item, int parameterIndex, V value) {
-        PreparedStatement ps = null;
-        try {
-            ps = connection.prepareStatement(sql);
-            switch (value.getClass().getSimpleName()) {
-                case "Integer" -> ps.setInt(parameterIndex, (Integer) value);
-                case "String" -> ps.setString(parameterIndex, (String) value);
-                default -> throw new IllegalArgumentException();
-            }
-            mapFromEntity(ps, item);
-            if (ps.executeUpdate() == 0)
-                throw new InputErrorsMessagesException(Map.of("sql","sql.not_updated"));
-        } catch (SQLException e) {
-            throw new UnknownSqlException(e.getMessage(), e.getCause());
-        } finally {
-            closeResultSetAndPreparedStatement(null, ps);
-        }
-    }
-
     protected void updateEntity(Connection connection, String sql, T item) {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             mapFromEntity(ps, item);

@@ -28,7 +28,7 @@ public class MySqlPatientDao extends GenericDao<Patient> implements PatientDao {
     private MySqlPatientDao(){}
 
 
-    private static final String INSERT_TEMPLATE = "INSERT INTO hospital.patient\n" +
+private static final String INSERT_TEMPLATE = "INSERT INTO patient\n" +
             "(status, doctor_id, firstname, lastname, date_of_birth, gender, email)" +
             "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -99,11 +99,6 @@ public class MySqlPatientDao extends GenericDao<Patient> implements PatientDao {
 
     public List<Patient> findAllPatients(Connection connection) {
         return findAll(connection, "SELECT * FROM patient");
-    }
-
-    @Override
-    public List<Patient> findPatientsWithDoctor(Connection connection) {
-        return findEntities(connection, "SELECT SQL_CALC_FOUND_ROWS * FROM patient WHERE doctor_id != NULL");
     }
 
     @Override

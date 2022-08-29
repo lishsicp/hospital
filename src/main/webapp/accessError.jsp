@@ -5,6 +5,8 @@
     <title>Access error</title>
 </head>
 <body>
-  <h1>Error: ${sessionScope.access_denied}</h1>
+  <h1>Error: don't have rights to access resource</h1>
+  <button onclick="window.history.go(-1); return false;"
+  type="submit">Return to previous page</button>
 </body>
 </html>

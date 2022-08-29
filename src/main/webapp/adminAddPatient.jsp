@@ -72,8 +72,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="clearfix">
-                                <button type="submit" class="btn btn-outline-dark"><fmt:message
-                                        key="admin.patient.add.patient"/></button>
+                                <button type="submit" class="btn btn-outline-dark"><fmt:message key="admin.patient.add"/><</button>
                             </div>
                         </div>
                         <c:if test="${requestScope.success != null}">
@@ -102,7 +101,7 @@
                                 input.parentElement.querySelector(".text-danger").innerHTML = message;
                             </script>
                         </c:forEach>
-                        <c:if test="${errors['insert_error'] != null}"><fmt:message key="${errors['insert_error']}" /></c:if>
+                        <c:if test="${errors['sql'] != null}"><fmt:message key="${errors['sql']}" /></c:if>
                     </div>
                 </c:if>
             </div>

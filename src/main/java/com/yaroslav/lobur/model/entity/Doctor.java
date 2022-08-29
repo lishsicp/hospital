@@ -1,6 +1,7 @@
 package com.yaroslav.lobur.model.entity;
 
 
+
 public class Doctor implements Entity {
 
   private long id;

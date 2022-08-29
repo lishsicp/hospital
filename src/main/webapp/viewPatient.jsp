@@ -86,7 +86,7 @@
                             <c:if test="${hospitalCard.diagnosis eq null}">
                                 <div class="row">
                                     <div class="col-sm-3">
-                                        <h6 class="mb-0"><fmt:message key="doctor.my.patients.diagnose"/></h6>
+                                        <h4 class="mb-0"><fmt:message key="doctor.my.patients.diagnose"/></h4>
                                     </div>
                                     <div class="col-sm-9 text-secondary">
                                         <form class="needs-validation" method="post" id="update_diagnosis"
@@ -97,7 +97,7 @@
                                             <input type="hidden" name="action" value="update_diagnosis">
                                             <input type="hidden" name="cardId" value="${hospitalCard.id}">
                                             <textarea rows="2" class="form-control" id="diagnosis" name="diagnosis"
-                                                      onclick="deleteInvalid(this)" required></textarea>
+                                                       required></textarea>
                                             <br>
                                         </form>
                                     </div>
@@ -122,6 +122,7 @@
                                 <button type="button" class="btn btn-outline-primary mx-3 col-sm-3"
                                         data-bs-toggle="modal"
                                         data-bs-target="#diagnoseModal"
+                                        ${hospitalCard.patient.status eq 'DISCHARGED' ? 'disabled' : ''}
                                         onclick="<c:set var="h" value="${hospitalCard}"/>"><fmt:message
                                         key="diagnosis.edit"/>
                                 </button>
@@ -145,7 +146,6 @@
                                                         <label for="diagnosis"><fmt:message
                                                                 key="doctor.my.patients.diagnose"/>:</label>
                                                         <textarea class="form-control"
-                                                                  onclick="deleteInvalid(this)"
                                                                   name="diagnosis" id="diagnosis"
                                                                   required>
                                                                 ${h.diagnosis}
@@ -258,7 +258,7 @@
                                                     <label for="desc"><fmt:message
                                                             key="doctor.view_patient.add.description"/></label>
                                                     <textarea rows="2" class="form-control" id="desc" name="description"
-                                                              onclick="deleteInvalid(this)" required></textarea>
+                                                               required></textarea>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
@@ -274,7 +274,7 @@
 
                             </c:if>
                             <c:if test="${appointment eq null}">
-                                <form action="${pageContext.request.contextPath}/controller">
+                                <form action="${pageContext.request.contextPath}/controller" method="post">
                                     <input type="hidden" name="action" value="assign_appointment">
                                     <input type="hidden" name="cardId" value="${hospitalCard.id}">
                                     <div class="row">
@@ -305,7 +305,7 @@
                                             <label for="description"><fmt:message
                                                     key="doctor.view_patient.add.description"/></label>
                                             <textarea rows="2" class="form-control" id="description" name="description"
-                                                      onclick="deleteInvalid(this)" required></textarea>
+                                                       required></textarea>
                                         </div>
                                     </div>
                                     <hr>
@@ -314,14 +314,31 @@
                             </c:if>
                         </div>
                     </div>
-
+                    <div class="form-group row">
+                        <c:if test="${hospitalCard.diagnosis ne null && appointment.status eq 'DONE'}">
+                            <form class="col-2" action="${pageContext.request.contextPath}/controller" method="post">
+                                <input type="hidden" name="action" value="discharge_patient">
+                                <input type="hidden" name="discharge" value="${hospitalCard.patient.id}">
+                                <input type="hidden" name="cardId" value="${hospitalCard.id}">
+                                <button class="btn btn-secondary" id="discharge" ${hospitalCard.patient.status eq 'DISCHARGED' ? 'disabled' : ''}><fmt:message key="doctor.view_patient.discharge"/></button>
+                            </form>
+                        </c:if>
+                        <c:if test="${hospitalCard.patient.status eq 'DISCHARGED'}">
+                            <form class="col" action="${pageContext.request.contextPath}/controller" method="post">
+                                <input type="hidden" name="action" value="download">
+                                <input type="hidden" name="appointmentId" value="${appointment.id}">
+                                <button class="btn btn-secondary" id="pdf"><em class="bi bi-download m-1"></em><fmt:message key="doctor.view_patient.download.info"/></button>
+                            </form>
+                        </c:if>
+                    </div>
                 </div>
+
                 <c:if test="${requestScope.errors != null}">
                     <div class="text-danger">
                         <c:forEach var="error" items="${requestScope.errors}">
                             <fmt:message key="${error.value}" bundle="${val}"/>
                         </c:forEach>
-                        <c:if test="${errors['sql'] != null}"><fmt:message key="${errors['sql']}"/></c:if>
+<%--                        <c:if test="${errors['sql'] != null}"><fmt:message key="${errors['sql']}"/></c:if>--%>
                     </div>
                 </c:if>
             </div>
@@ -336,6 +353,13 @@
                 <strong><fmt:message key="${sessionScope.success}"/></strong>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
                         onclick="${sessionScope.remove("success")}"></button>
+            </div>
+        </c:if>
+        <c:if test="${requestScope.fail != null}">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong><fmt:message key="${sessionScope.success}"/></strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+                        onclick="${requestScope.remove("fail")}"></button>
             </div>
         </c:if>
     </div>

@@ -101,7 +101,7 @@
               <input type="hidden" name="action" value="make_appointment">
               <input type="hidden" name="appointmentId" value="${a.id}">
               <input type="hidden" name="userId" value="${current_user.id}">
-              <button type="submit" class="btn btn-secondary" ${a.status=='DONE' or current_user.role=='NURSE' ? 'disabled' : ''}><fmt:message key="appointments.make"/></button>
+              <button type="submit" class="btn btn-secondary" ${a.status=='DONE' or (current_user.role=='NURSE' and a.type=='OPERATION') ? 'disabled' : ''}><fmt:message key="appointments.make"/></button>
             </form>
           </th>
         </tr>
@@ -124,7 +124,7 @@
     <c:forEach begin="1" end="${noOfPages}" var="i">
       <c:choose>
         <c:when test="${currentPageNo eq i}">
-          <li class="page-item"><a class="page-link active" href="#">${i}</a></li>
+          <li class="page-item active"><a class="page-link active" href="#">${i}</a></li>
         </c:when>
         <c:otherwise>
           <li class="page-item">

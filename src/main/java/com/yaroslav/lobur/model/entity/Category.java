@@ -21,5 +21,4 @@ public class Category implements Entity {
   public void setName(String category) {
     this.name = category;
   }
-
 }

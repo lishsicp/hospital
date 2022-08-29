@@ -2,6 +2,7 @@ package com.yaroslav.lobur.service;
 
 import com.yaroslav.lobur.exceptions.DBExceptionMessages;
 import com.yaroslav.lobur.exceptions.EntityNotFoundException;
+import com.yaroslav.lobur.exceptions.InputErrorsMessagesException;
 import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.dao.DaoFactory;
 import com.yaroslav.lobur.model.dao.UserDao;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 public class UserService {
@@ -26,13 +28,18 @@ public class UserService {
         userDao = daoFactory.getUserDao();
     }
     public long registerUser(User user) {
+        Connection con = null;
         try {
-            Connection con = daoFactory.open();
+            con = daoFactory.beginTransaction();
             userDao.checkUniqueFields(con, user);
-            return userDao.insertUser(con, user);
-        } catch (UnknownSqlException e) {
+            long id = userDao.insertUser(con, user);
+            daoFactory.commit(con);
+            return id;
+        } catch (InputErrorsMessagesException | UnknownSqlException e) {
             e.printStackTrace();
             throw e;
+        } finally {
+            daoFactory.close(con);
         }
     }
 
@@ -54,10 +61,9 @@ public class UserService {
     }
 
     public User getUserById(long id) {
-        try {
-            Connection con = daoFactory.open();
+        try(Connection con = daoFactory.open()) {
             return userDao.findUserById(con, id);
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | UnknownSqlException | SQLException e) {
             throw new DBExceptionMessages(List.of("user.not_found"));
         }
     }

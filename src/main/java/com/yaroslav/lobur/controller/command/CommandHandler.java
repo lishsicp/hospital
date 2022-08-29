@@ -4,11 +4,7 @@ import com.yaroslav.lobur.controller.command.impl.*;
 import com.yaroslav.lobur.controller.command.impl.admin.*;
 import com.yaroslav.lobur.controller.command.impl.authentication.LogoutCommand;
 import com.yaroslav.lobur.controller.command.impl.authentication.UserSignInCommand;
-import com.yaroslav.lobur.controller.command.impl.authentication.UserSignUpCommand;
-import com.yaroslav.lobur.controller.command.impl.doctor.DoctorAssignAppointmentCommand;
-import com.yaroslav.lobur.controller.command.impl.doctor.MyPatientsCommand;
-import com.yaroslav.lobur.controller.command.impl.doctor.UpdateAppointmentCommand;
-import com.yaroslav.lobur.controller.command.impl.doctor.UpdatePatientDiagnosisCommand;
+import com.yaroslav.lobur.controller.command.impl.doctor.*;
 import com.yaroslav.lobur.controller.command.impl.nurse.NurseAppointmentsCommand;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -27,7 +23,6 @@ public class CommandHandler {
 
     private CommandHandler() {
         commandMap.put("sign_in", new UserSignInCommand());
-        commandMap.put("sign_up", new UserSignUpCommand());
         commandMap.put("unknown_command", new UnknownCommand());
         commandMap.put("logout", new LogoutCommand());
         commandMap.put("view_user", new ViewUserCommand());
@@ -47,6 +42,8 @@ public class CommandHandler {
         commandMap.put("appointments", new ListAppointmentsCommand());
         commandMap.put("nurse_appointments", new NurseAppointmentsCommand());
         commandMap.put("make_appointment", new MakeAppointmentCommand());
+        commandMap.put("discharge_patient", new DischargePatientCommand());
+        commandMap.put("download", new DownloadDischargeInfo());
     }
 
     public static CommandHandler getInstance() {
@@ -64,7 +61,6 @@ public class CommandHandler {
 
     public Command defineCommand(HttpServletRequest req) {
         String action = req.getParameter("action");
-        //logger.debug("Attempting to make an action: {}", action);
         if (action == null || action.isEmpty()) {
             logger.info("Empty or unknown command {} {}", req.getMethod(), req.getRequestURI());
             req.setAttribute("command", action);
