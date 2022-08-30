@@ -35,7 +35,10 @@
         <error-code>401</error-code>
         <location>/accessError.jsp</location>
     </error-page>
-
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error500.jsp</location>
+    </error-page>
     <error-page>
         <exception-type>com.yaroslav.lobur.exceptions.UnknownSqlException</exception-type>
         <location>/dbError.jsp</location>

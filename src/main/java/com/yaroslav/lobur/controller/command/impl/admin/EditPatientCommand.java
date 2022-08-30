@@ -8,7 +8,7 @@ import com.yaroslav.lobur.model.entity.Patient;
 import com.yaroslav.lobur.model.entity.enums.PatientStatus;
 import com.yaroslav.lobur.service.PatientService;
 import com.yaroslav.lobur.utils.CommandResult;
-import com.yaroslav.lobur.utils.PagePathManager;
+import com.yaroslav.lobur.utils.managers.PagePathManager;
 import com.yaroslav.lobur.validator.PatientValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -57,7 +57,7 @@ public class EditPatientCommand implements Command {
             } catch (InputErrorsMessagesException e) {
                 errors.putAll(e.getErrorMessageMap());
             } catch (DBExceptionMessages e) {
-                errors.put("sql", e.getErrorMessages().get(0));
+                request.setAttribute("sql", e.getErrorMessages().get(0));
             }
         }
         if (!errors.isEmpty()) {

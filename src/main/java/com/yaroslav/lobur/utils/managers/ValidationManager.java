@@ -1,4 +1,4 @@
-package com.yaroslav.lobur.utils;
+package com.yaroslav.lobur.utils.managers;
 
 import java.util.ResourceBundle;
 

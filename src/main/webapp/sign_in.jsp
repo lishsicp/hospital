@@ -11,7 +11,8 @@
 <html lang="${sessionScope.language}">
 <head>
     <c:import url="meta.jsp"/>
-    <title><fmt:message key="signin.title" /></title>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <title><fmt:message key="signin.title"/></title>
 </head>
 <body>
 <c:import url="topnav.jsp"/>
@@ -47,10 +48,32 @@
                     <button type="submit" class="btn btn-primary"><fmt:message key="signin.signin" /></button>
                 </div>
             </div>
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <!-- reCAPTCHA -->
+                    <div class="g-recaptcha"
+                         data-sitekey="6LeKHr4hAAAAAA3eXh8oC86Haxrqeb73Hx_Xt-f0"></div>
+                </div>
+            </div>
         </div>
     </form>
-    <p><fmt:message key="signin.account" /> <a class="link-info text-decoration-none" href="${pageContext.request.contextPath}/sign_up.jsp"><fmt:message key="header.signup" /></a></p>
+    <c:if test="${sql ne null}">
+        <p class="text-danger"><fmt:message key="${sql}"/></p>
+    </c:if>
+    <c:if test="${captchaError ne null}">
+        <p class="text-danger"><fmt:message key="${captchaError}"/></p>
+    </c:if>
+<%--    <p><fmt:message key="signin.account" /> <a class="link-info text-decoration-none" href="${pageContext.request.contextPath}/sign_up.jsp"><fmt:message key="header.signup" /></a></p>--%>
 </div>
+<script>
+    window.onload = function() {
+        var $recaptcha = document.querySelector('#g-recaptcha-response');
+
+        if($recaptcha) {
+            $recaptcha.setAttribute("required", "required");
+        }
+    };
+</script>
 <c:import url="scripts.jsp"/>
 <c:import url="footer.jsp" />
 

@@ -147,8 +147,10 @@
                 input.parentElement.querySelector(".text-danger").innerHTML = message;
             </script>
         </c:forEach>
+        ${sessionScope.sql}
     </div>
 </c:if>
+
 <c:import url="scripts.jsp"/>
 </body>
 </html>

@@ -1,7 +1,7 @@
 package com.yaroslav.lobur.controller.command.impl;
 
 import com.yaroslav.lobur.utils.CommandResult;
-import com.yaroslav.lobur.utils.PagePathManager;
+import com.yaroslav.lobur.utils.managers.PagePathManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import com.yaroslav.lobur.controller.command.Command;

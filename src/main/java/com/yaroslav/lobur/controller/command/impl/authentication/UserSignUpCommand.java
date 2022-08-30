@@ -5,7 +5,7 @@ import com.yaroslav.lobur.exceptions.DBExceptionMessages;
 import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.service.UserService;
 import com.yaroslav.lobur.utils.CommandResult;
-import com.yaroslav.lobur.utils.PagePathManager;
+import com.yaroslav.lobur.utils.managers.PagePathManager;
 import com.yaroslav.lobur.utils.PasswordEncryptor;
 import com.yaroslav.lobur.utils.requestparsers.UserRequestParser;
 import com.yaroslav.lobur.validator.UserValidator;

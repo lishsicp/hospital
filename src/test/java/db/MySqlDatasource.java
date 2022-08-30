@@ -21,6 +21,10 @@ public class MySqlDatasource {
         ds.setUrl(rs.getString("url"));
         ds.setUsername(rs.getString("username"));
         ds.setPassword(rs.getString("password"));
+        ds.setMaxIdle(Integer.parseInt(rs.getString("maxIdle")));
+        ds.setMaxIdle(Integer.parseInt(rs.getString("minIdle")));
+        ds.setMaxTotal(Integer.parseInt(rs.getString("maxTotal")));
+        ds.setMaxWaitMillis(10000);
     }
 
     public static DataSource getDataSource() {

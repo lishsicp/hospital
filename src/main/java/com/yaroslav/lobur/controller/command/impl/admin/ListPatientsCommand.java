@@ -7,15 +7,13 @@ import com.yaroslav.lobur.model.entity.enums.OrderBy;
 import com.yaroslav.lobur.service.DoctorService;
 import com.yaroslav.lobur.service.PatientService;
 import com.yaroslav.lobur.utils.CommandResult;
-import com.yaroslav.lobur.utils.PagePathManager;
+import com.yaroslav.lobur.utils.managers.PagePathManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.stream.Collectors;
 
 public class ListPatientsCommand implements Command {
 

@@ -4,12 +4,10 @@ import com.yaroslav.lobur.controller.command.Command;
 import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.service.UserService;
 import com.yaroslav.lobur.utils.CommandResult;
-import com.yaroslav.lobur.utils.PagePathManager;
+import com.yaroslav.lobur.utils.managers.PagePathManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
-import java.io.IOException;
 
 public class ViewUserCommand implements Command {
 

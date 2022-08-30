@@ -2,12 +2,14 @@ package com.yaroslav.lobur.controller.command.impl.authentication;
 
 import com.yaroslav.lobur.controller.command.Command;
 import com.yaroslav.lobur.exceptions.DBExceptionMessages;
+import com.yaroslav.lobur.exceptions.EntityNotFoundException;
 import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.service.DoctorService;
 import com.yaroslav.lobur.service.UserService;
 import com.yaroslav.lobur.utils.CommandResult;
-import com.yaroslav.lobur.utils.PagePathManager;
+import com.yaroslav.lobur.utils.managers.PagePathManager;
+import com.yaroslav.lobur.utils.VerifyReCaptchaUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -25,6 +27,19 @@ public class UserSignInCommand implements Command {
         String email = request.getParameter("email");
         String password = request.getParameter("psw");
         UserService userService = (UserService) request.getServletContext().getAttribute("userService");
+
+        boolean verify;
+
+        String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
+
+        logger.info("gRecaptchaResponse= {}", gRecaptchaResponse);
+
+        // Verify CAPTCHA.
+        verify = VerifyReCaptchaUtil.verify(gRecaptchaResponse);
+        if (!verify) {
+            request.setAttribute("captchaError", "captcha.error");
+            return new CommandResult(page);
+        }
         try {
             long id = userService.signIn(email, password);
             User user = userService.getUserById(id);
@@ -48,7 +63,7 @@ public class UserSignInCommand implements Command {
             logger.debug("{}", e.getErrorMessages());
             logger.debug("Login failed. Incorrect login or password.");
             session.setAttribute("errors", e.getErrorMessages());
-        } catch (UnknownSqlException e) {
+        } catch (UnknownSqlException | EntityNotFoundException e) {
             logger.error("", e);
             request.setAttribute("sql", "sql.error");
         }

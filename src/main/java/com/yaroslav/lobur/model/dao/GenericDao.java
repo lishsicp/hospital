@@ -187,7 +187,7 @@ public abstract class GenericDao<T extends Entity>  {
     }
 
     /**
-     * Generic method that remove entity
+     * Generic method that removes entity
      * @param connection a connection
      * @param sql SQL query <code>String</code>
      * @throws InputErrorsMessagesException map of error messages

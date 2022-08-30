@@ -2,12 +2,13 @@ package com.yaroslav.lobur.controller.command.impl.admin;
 
 import com.yaroslav.lobur.controller.command.Command;
 import com.yaroslav.lobur.exceptions.InputErrorsMessagesException;
+import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.entity.Category;
 import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.service.DoctorService;
 import com.yaroslav.lobur.utils.CommandResult;
-import com.yaroslav.lobur.utils.PagePathManager;
+import com.yaroslav.lobur.utils.managers.PagePathManager;
 import com.yaroslav.lobur.utils.PasswordEncryptor;
 import com.yaroslav.lobur.utils.requestparsers.UserRequestParser;
 import com.yaroslav.lobur.validator.DoctorValidator;
@@ -56,6 +57,8 @@ public class AdminAddDoctorCommand implements Command {
             } catch (InputErrorsMessagesException e) {
                 logger.debug("Validation fail");
                 errors.putAll(e.getErrorMessageMap());
+            } catch (UnknownSqlException e) {
+                session.setAttribute("sql", "sql.error");
             }
         }
         if (!errors.isEmpty()) {

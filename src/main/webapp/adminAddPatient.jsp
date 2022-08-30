@@ -20,13 +20,6 @@
         <%-- Top navigation--%>
         <c:import url="topnav.jsp"/>
         <%--Page Content--%>
-            <%--<div class="alert alert-danger alert-dismissible fade m-4 hiding" id="fail">--%>
-            <%--    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>--%>
-            <%--</div>--%>
-            <%--<div class="alert alert-success alert-dismissible fade show m-4" id="fail">--%>
-            <%--    <strong>Error</strong>--%>
-            <%--    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>--%>
-            <%--</div>--%>
             <div class="container">
                 <h3><fmt:message key="admin.patient.add"/></h3>
                 <form method="POST" class="needs-validation">
@@ -72,7 +65,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="clearfix">
-                                <button type="submit" class="btn btn-outline-dark"><fmt:message key="admin.patient.add"/><</button>
+                                <button type="submit" class="btn btn-outline-dark"><fmt:message key="admin.patient.add"/></button>
                             </div>
                         </div>
                         <c:if test="${requestScope.success != null}">

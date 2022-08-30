@@ -7,7 +7,7 @@
 <fmt:setBundle basename="validation.validation" var="val"/>
 
 <div class="container-fluid">
-  <form action="${pageContext.request.contextPath}/controller?action=${current_user.role == 'DOCTOR' ? 'appointments' : 'nurse_appointments'}&page=${currentPageNo}">
+  <form method="post" action="${pageContext.request.contextPath}/controller?action=${current_user.role == 'DOCTOR' ? 'appointments' : 'nurse_appointments'}&page=${currentPageNo}">
     <input type="hidden" name="action" value="${current_user.role == 'DOCTOR' ? 'appointments' : 'nurse_appointments'}">
     <div class="row mb-3">
       <div class="col-sm-10">

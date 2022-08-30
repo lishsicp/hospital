@@ -234,7 +234,7 @@
                     <c:forEach begin="1" end="${noOfPages}" var="i">
                         <c:choose>
                             <c:when test="${currentPageNo eq i}">
-                                <li class="page-item"><a class="page-link active" href="#">${i}</a></li>
+                                <li class="page-item active"><a class="page-link active" href="#">${i}</a></li>
                             </c:when>
                             <c:otherwise>
                                 <li class="page-item">

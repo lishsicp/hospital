@@ -1,7 +1,7 @@
 package com.yaroslav.lobur.validator;
 
 import com.yaroslav.lobur.model.entity.Appointment;
-import com.yaroslav.lobur.utils.RegexpManager;
+import com.yaroslav.lobur.utils.managers.RegexpManager;
 
 import java.util.Map;
 

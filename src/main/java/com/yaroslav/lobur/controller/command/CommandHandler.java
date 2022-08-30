@@ -61,7 +61,7 @@ public class CommandHandler {
 
     public Command defineCommand(HttpServletRequest req) {
         String action = req.getParameter("action");
-        if (action == null || action.isEmpty()) {
+        if (action == null || action.isEmpty() || commandMap.get(action) == null) {
             logger.info("Empty or unknown command {} {}", req.getMethod(), req.getRequestURI());
             req.setAttribute("command", action);
             action = "unknown_command";
