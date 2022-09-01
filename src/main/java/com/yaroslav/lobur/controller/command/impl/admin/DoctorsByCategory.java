@@ -1,6 +1,7 @@
 package com.yaroslav.lobur.controller.command.impl.admin;
 
 import com.yaroslav.lobur.controller.command.Command;
+import com.yaroslav.lobur.exceptions.EntityNotFoundException;
 import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.Patient;
@@ -36,6 +37,9 @@ public class DoctorsByCategory implements Command {
             session.setAttribute("doctorsByCategory", doctorList);
         } catch (UnknownSqlException e) {
             logger.debug("", e);
+            request.setAttribute("sql", "sql.error");
+        } catch (EntityNotFoundException e) {
+            request.setAttribute("sql", e.getMessage());
         }
 
         return new CommandResult("/assignPatient.jsp");

@@ -11,7 +11,7 @@
 <html lang="${sessionScope.language}">
 <head>
     <c:import url="meta.jsp"/>
-    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <script src='https://www.google.com/recaptcha/api.js?hl=${sessionScope.language eq 'uk-UA' ? 'ru' : 'en'}'></script>
     <title><fmt:message key="signin.title"/></title>
 </head>
 <body>

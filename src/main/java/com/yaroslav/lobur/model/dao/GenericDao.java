@@ -47,6 +47,7 @@ public abstract class GenericDao<T extends Entity>  {
             }
             return list;
         } catch (SQLException e) {
+            logger.error("", e);
             throw new UnknownSqlException(e.getMessage());
         } finally {
             closeResultSetAndPreparedStatement(rs, ps);
@@ -90,6 +91,7 @@ public abstract class GenericDao<T extends Entity>  {
             }
             return list;
         } catch (SQLException e) {
+            logger.error("", e);
             throw new UnknownSqlException(e.getMessage(), e.getCause());
         } finally {
             closeResultSetAndPreparedStatement(rs, ps);
@@ -149,8 +151,10 @@ public abstract class GenericDao<T extends Entity>  {
                 entity = mapToEntity(rs);
                 return entity;
             }
+            logger.info("{}", "Entity not found");
             throw new EntityNotFoundException("not.found");
         } catch (SQLException e) {
+            logger.error("", e);
             throw new UnknownSqlException(e.getMessage(), e.getCause());
         } finally {
             closeResultSetAndPreparedStatement(rs, ps);
@@ -180,6 +184,7 @@ public abstract class GenericDao<T extends Entity>  {
             }
             throw new InputErrorsMessagesException(Map.of("sql","sql.insert"));
         } catch (SQLException e) {
+            logger.error("", e);
             throw new UnknownSqlException(e.getMessage());
         } finally {
             closeResultSetAndPreparedStatement(rs, ps);
@@ -201,6 +206,7 @@ public abstract class GenericDao<T extends Entity>  {
         } catch (SQLIntegrityConstraintViolationException e) {
             throw new InputErrorsMessagesException(Map.of("sql","sql.data_integrity"));
         } catch (SQLException e) {
+            logger.error("", e);
             throw new UnknownSqlException(e.getMessage(), e.getCause());
         } finally {
             closeResultSetAndPreparedStatement(null, ps);
@@ -221,6 +227,7 @@ public abstract class GenericDao<T extends Entity>  {
             if (ps.executeUpdate() == 0)
                 throw new InputErrorsMessagesException(Map.of("sql","sql.not_updated"));
         } catch (SQLException e) {
+            logger.error("", e);
             throw new UnknownSqlException(e.getMessage(), e.getCause());
         }
     }

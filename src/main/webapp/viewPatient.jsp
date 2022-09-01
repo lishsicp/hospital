@@ -12,7 +12,7 @@
 <html lang="${sessionScope.language}">
 <head>
     <c:import url="meta.jsp"/>
-    <title>Patient details</title>
+    <title><fmt:message key="doctor.view_patient.patientDetails"/></title>
 </head>
 <body>
 <div class="d-flex" id="wrapper">
@@ -27,7 +27,7 @@
             <c:if test="${sessionScope.hospitalCard != null}">
             <div class="row">
                 <div class="col-md-5">
-                    <h2 class="p-2">Patient Details</h2>
+                    <h2 class="p-2"><fmt:message key="doctor.view_patient.patientDetails"/></h2>
                     <div class="card mb-3">
                         <div class="card-body">
                             <div class="row">
@@ -53,7 +53,7 @@
                                     <h6 class="mb-0"><fmt:message key="patient.age"/></h6>
                                 </div>
                                 <div class="col-sm-9 text-secondary">
-                                    <ctg:calcAge date="${hospitalCard.patient.dateOfBirth}"/>
+                                    <ctg:getAge date="${hospitalCard.patient.dateOfBirth}"/>
                                 </div>
                             </div>
                             <hr>
@@ -80,7 +80,7 @@
                 </div>
                 </c:if>
                 <div class="col-md-7">
-                    <h2 class="p-2">Medical Info</h2>
+                    <h2 class="p-2"><fmt:message key="doctor.view_patient.medicalInfo"/></h2>
                     <div class="card mb-3">
                         <div class="card-body">
                             <c:if test="${hospitalCard.diagnosis eq null}">
@@ -102,7 +102,7 @@
                                         </form>
                                     </div>
                                     <hr>
-                                    <button type="submit" class="btn btn-secondary mx-3 col-sm-1"
+                                    <button type="submit" class="btn btn-secondary mx-3 col-sm-2"
                                             form="update_diagnosis"><fmt:message
                                             key="doctor.my.patients.save"/></button>
                                     <div class="text-danger invalid-feedback"></div>
@@ -147,9 +147,7 @@
                                                                 key="doctor.my.patients.diagnose"/>:</label>
                                                         <textarea class="form-control"
                                                                   name="diagnosis" id="diagnosis"
-                                                                  required>
-                                                                ${h.diagnosis}
-                                                        </textarea>
+                                                                  required>${h.diagnosis}</textarea>
                                                         <div class="text-danger invalid-feedback"></div>
                                                     </div>
                                                 </div>
@@ -167,7 +165,7 @@
                             </c:if>
                             <hr>
                         <div class="col-sm-5">
-                            <h4 class="mb-3">Appointment Info</h4>
+                            <h4 class="mb-3"><fmt:message key="doctor.view_patient.appointmentInfo"/></h4>
                         </div>
                             <c:if test="${appointment != null}">
 
@@ -338,16 +336,20 @@
                         <c:forEach var="error" items="${requestScope.errors}">
                             <fmt:message key="${error.value}" bundle="${val}"/>
                         </c:forEach>
-<%--                        <c:if test="${errors['sql'] != null}"><fmt:message key="${errors['sql']}"/></c:if>--%>
+                    </div>
+                </c:if>
+                <c:if test="${dischargeInfo ne null}">
+                    <div class="text-danger">
+                        <fmt:message key="${dischargeInfo}"/>
                     </div>
                 </c:if>
             </div>
         </div>
-<%--        <div class="text-danger" id="sql">--%>
-<%--            <c:if test="${sql ne null}">--%>
-<%--                <fmt:message key="${sql}"/>--%>
-<%--            </c:if>--%>
-<%--        </div>--%>
+        <c:if test="${sql ne null}">
+            <div class="text-danger" id="sql">
+                <fmt:message key="${sql}"/>
+            </div>
+        </c:if>
         <c:if test="${sessionScope.success != null}">
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <strong><fmt:message key="${sessionScope.success}"/></strong>

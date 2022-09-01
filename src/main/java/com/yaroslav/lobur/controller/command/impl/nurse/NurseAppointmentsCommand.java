@@ -1,6 +1,8 @@
 package com.yaroslav.lobur.controller.command.impl.nurse;
 
 import com.yaroslav.lobur.controller.command.Command;
+import com.yaroslav.lobur.exceptions.EntityNotFoundException;
+import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.entity.Appointment;
 import com.yaroslav.lobur.model.entity.enums.AppointmentStatus;
 import com.yaroslav.lobur.model.entity.enums.AppointmentType;
@@ -56,8 +58,11 @@ public class NurseAppointmentsCommand implements Command {
             int noOfPages = (int) Math.ceil(noOfRecords * 1.0 / recordsPerPage);
             request.setAttribute("noOfPages", noOfPages);
             request.setAttribute("currentPageNo", pageNo);
-        } catch (Exception e) {
-            logger.error("", e);
+
+            session.setAttribute("action", "nurse_appointments");
+        } catch (EntityNotFoundException | UnknownSqlException e) {
+            logger.error("Error - {}",  e.getMessage());
+            request.setAttribute("sql", "sql.error");
         }
         return new CommandResult("/nurseAppointments.jsp");
     }

@@ -50,7 +50,8 @@ public class ListDoctorsCommand implements Command {
             request.setAttribute("noOfPages", noOfPages);
             request.setAttribute("currentPageNo", pageNo);
         } catch (EntityNotFoundException | UnknownSqlException e) {
-            logger.error("", e);
+            logger.error("Error - {}",  e.getMessage());
+            request.setAttribute("sql", "sql.error");
         }
         String page = PagePathManager.getProperty("page.admin.doctors");
         session.setAttribute("currentPage", page);

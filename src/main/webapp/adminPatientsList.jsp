@@ -115,7 +115,7 @@
                                 </th>
                                 <th class="align-middle" scope="col">
                                     <form action="${pageContext.request.contextPath}/controller" class="h-100" style="margin-bottom: 0;" method="post">
-                                        <input class="btn btn-outline-danger btn-sm" type="submit" value="Delete"/>
+                                        <input class="btn btn-outline-danger btn-sm" type="submit" value="<fmt:message key="delete"/>"/>
                                         <input type="hidden" name="action" value="delete_patient"/>
                                         <input type="hidden" name="patientId" value="${p.id}"/>
                                     </form>
@@ -270,9 +270,14 @@
             <c:if test="${patientUpdateErrors != null}">
                 <div class="text-danger">
                     <c:forEach var="error" items="${patientUpdateErrors}">
-                        <fmt:message key="${error.value}" bundle="${val}"/>
+                        <fmt:message key="${error.value}" bundle="${val}"/> <br>
                     </c:forEach>
                 </div>
+                <c:if test="${patientUpdateErrors[sql] ne null}">
+                    <div class="text-danger" id="sql">
+                        <fmt:message key="${patientUpdateErrors[sql]}"/>
+                    </div>
+                </c:if>
             </c:if>
         </div>
     </div>

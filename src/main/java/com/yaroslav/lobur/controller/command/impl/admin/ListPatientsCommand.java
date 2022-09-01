@@ -69,7 +69,7 @@ public class ListPatientsCommand implements Command {
             request.setAttribute("currentPageNo", pageNo);
         } catch (UnknownSqlException | EntityNotFoundException e) {
             logger.error("Error - {}",  e.getMessage());
-            throw e;
+            request.setAttribute("sql", "sql.error");
         }
         String page = PagePathManager.getProperty("page.admin.patients");
         session.setAttribute("currentPage", page);

@@ -14,10 +14,10 @@ public class ViewUserCommand implements Command {
     @Override
     public CommandResult execute(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
-        long id = Long.parseLong(request.getParameter("user_id"));
+        //long id = Long.parseLong(request.getParameter("user_id"));
         String page = PagePathManager.getProperty("page.view_user");
-        UserService userService = (UserService) request.getServletContext().getAttribute("userService");
-        User user = userService.getUserById(id);
+        //UserService userService = (UserService) request.getServletContext().getAttribute("userService");
+        User user = (User) session.getAttribute("current_user");
         session.setAttribute("viewUser", user);
         session.setAttribute("currentPage", page);
         return new CommandResult(page);

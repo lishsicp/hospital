@@ -107,8 +107,9 @@ public class MySqlAppointmentDao extends GenericDao<Appointment> implements Appo
     @Override
     public List<Appointment> findAppointmentsByType(Connection connection, List<String> types, int offset, int noOfRecords) {
         long c = types.stream().filter(Objects::isNull).count();
-        if (c == 3) return findEntities(connection, "SELECT SQL_CALC_FOUND_ROWS * FROM appointment" + " LIMIT " + offset + ", " + noOfRecords);
-        return findEntities(connection, "SELECT SQL_CALC_FOUND_ROWS * FROM appointment WHERE type=? OR type=? OR type=?" + " LIMIT " + offset + ", " + noOfRecords,  types.toArray(String[]::new));
+        if (c == 3 && types.size() == 3) return findEntities(connection, "SELECT SQL_CALC_FOUND_ROWS * FROM appointment" + " LIMIT " + offset + ", " + noOfRecords);
+        if (c == 3 && types.size() == 4) return findEntities(connection, "SELECT SQL_CALC_FOUND_ROWS * FROM appointment WHERE status = ?" + " LIMIT " + offset + ", " + noOfRecords, types.get(3));
+        return findEntities(connection, "SELECT SQL_CALC_FOUND_ROWS * FROM appointment WHERE (type=? OR type=? OR type=?)" + (types.size() > 3 ? " AND status = ?" : " ") + " LIMIT " + offset + ", " + noOfRecords,  types.toArray(String[]::new));
     }
 
     @Override

@@ -14,10 +14,14 @@ import com.yaroslav.lobur.utils.CommandResult;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class DownloadDischargeInfo implements Command {
+
+    private static final Logger logger = Logger.getLogger(DownloadDischargeInfo.class);
+
     @Override
     public CommandResult execute(HttpServletRequest request, HttpServletResponse response) {
         AppointmentService appointmentService = (AppointmentService) request.getServletContext().getAttribute("appointmentService");
@@ -39,7 +43,8 @@ public class DownloadDischargeInfo implements Command {
         } catch (UnknownSqlException e) {
             request.setAttribute("sql", "sql.error");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error(e);
+            request.setAttribute("dischargeInfo", "discharge.info.error");
         }
         return new CommandResult("viewPatient.jsp");
     }

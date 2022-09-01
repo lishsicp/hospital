@@ -44,6 +44,8 @@ public class MakeAppointmentCommand implements Command {
             logger.error("{}", e.getMessage());
             request.setAttribute("sql", "sql.error");
         }
-        return new CommandResult(request.getRequestURI() + "?action=appointments", true);
+        session.setAttribute("success", "appointment.made");
+        String action = currentUser.getRole().name().equals("DOCTOR") ? "appointments" : "nurse_appointments";
+        return new CommandResult(request.getRequestURI() + "?action=" + action, true);
     }
 }

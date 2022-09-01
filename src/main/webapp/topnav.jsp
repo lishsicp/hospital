@@ -41,8 +41,8 @@
                         <a class="nav-link dropdown-toggle" style="margin-bottom: 0;" id="navbarDropdown" href="#" role="button"
                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">${current_user.email}</a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="${pageContext.request.contextPath}/controller?action=view_user&user_id=${current_user.id}"><fmt:message key="profile"/></a>
-                            <a class="dropdown-item" href="#!">Another action</a>
+                            <a class="dropdown-item" href="${pageContext.request.contextPath}/controller?action=view_user"><fmt:message key="profile"/></a>
+<%--                            <a class="dropdown-item" href="#!">Another action</a>--%>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="${pageContext.request.contextPath}/controller?action=logout"><fmt:message
                                     key="header.logout"/></a>

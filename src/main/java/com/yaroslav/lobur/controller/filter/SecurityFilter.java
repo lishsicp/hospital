@@ -31,7 +31,6 @@ public class SecurityFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String path = httpRequest.getServletPath();
         String command = httpRequest.getParameter("action");
-        logger.info("Request URL : {}", httpRequest.getRequestURL());
         logger.info("Servlet path {}", path);
         if (path.endsWith("hospital/")
                 || path.endsWith("sign_in.jsp")
@@ -65,6 +64,5 @@ public class SecurityFilter implements Filter {
         } else {
             chain.doFilter(request, response);
         }
-        //chain.doFilter(request, response);
     }
 }
