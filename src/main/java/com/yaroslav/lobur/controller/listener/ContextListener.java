@@ -1,6 +1,8 @@
 package com.yaroslav.lobur.controller.listener;
 
+import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.dao.*;
+import com.yaroslav.lobur.model.dao.impl.MySqlDaoFactory;
 import com.yaroslav.lobur.service.AppointmentService;
 import com.yaroslav.lobur.service.DoctorService;
 import com.yaroslav.lobur.service.PatientService;
@@ -61,12 +63,20 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
 
     public void initServices(ServletContext ctx) {
         DataSource dataSource = (DataSource) ctx.getAttribute(DATASOURCE_PARAM);
-        DaoFactory.init(dataSource);
+        //DaoFactory
+        DaoFactory daoFactory = new MySqlDaoFactory(dataSource);
+        // DAO
+        UserDao userDao = daoFactory.getUserDao();
+        PatientDao patientDao = daoFactory.getPatientDao();
+        HospitalCardDao hospitalCardDao = daoFactory.getHospitalCardDao();
+        DoctorDao doctorDao = daoFactory.getDoctorDao();
+        AppointmentDao appointmentDao = daoFactory.getAppointmentDao();
+        CategoryDao categoryDao = daoFactory.getCategoryDao();
         // SERVICE
-        UserService userService = new UserService();
-        PatientService patientService = new PatientService();
-        DoctorService doctorService = new DoctorService();
-        AppointmentService appointmentService = new AppointmentService();
+        UserService userService = new UserService(daoFactory, userDao);
+        PatientService patientService = new PatientService(daoFactory, patientDao, hospitalCardDao);
+        DoctorService doctorService = new DoctorService(daoFactory, userDao, categoryDao, doctorDao);
+        AppointmentService appointmentService = new AppointmentService(daoFactory, appointmentDao);
         // Attributes
         ctx.setAttribute("userService", userService);
         ctx.setAttribute("patientService", patientService);
@@ -84,7 +94,6 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         ServletContext servletContext = sce.getServletContext();
-        DaoFactory.getDaoFactory().close(DaoFactory.getDaoFactory().open());
         servletContext.removeAttribute(DATASOURCE_PARAM);
         servletContext.removeAttribute("userService");
         servletContext.removeAttribute("patientService");
@@ -101,7 +110,7 @@ public class ContextListener implements ServletContextListener, HttpSessionListe
             ctx.setAttribute("securityMap", SecurityMapInitializer.initialize(properties));
         } catch (IOException e) {
             logger.error("Security wasn't initialized, Properties not found" + e);
-            throw new RuntimeException();
+            throw new UnknownSqlException("sql.error");
         }
     }
 }

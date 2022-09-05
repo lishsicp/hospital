@@ -135,9 +135,9 @@
         </div>
     </div>
 </div>
-<c:if test="${sessionScope.doctorErrors != null}">
+<c:if test="${requestScope.doctorErrors != null}">
     <div class="text-danger">
-        <c:forEach var="error" items="${sessionScope.doctorErrors}">
+        <c:forEach var="error" items="${requestScope.doctorErrors}">
             <script>
                 var key = '${error.key}';
                 var message = "<fmt:message key="${error.value}" bundle="${val}"/>";
@@ -147,7 +147,7 @@
                 input.parentElement.querySelector(".text-danger").innerHTML = message;
             </script>
         </c:forEach>
-        ${sessionScope.sql}
+        <c:if test="${sessionScope.sql ne null}}"><div class="text-danger"><fmt:message key="${sessionScope.sql}"/></div></c:if>
     </div>
 </c:if>
 

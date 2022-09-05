@@ -5,6 +5,7 @@ import com.yaroslav.lobur.exceptions.EntityNotFoundException;
 import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.entity.Appointment;
 import com.yaroslav.lobur.model.entity.HospitalCard;
+import com.yaroslav.lobur.model.entity.enums.AppointmentStatus;
 import com.yaroslav.lobur.service.AppointmentService;
 import com.yaroslav.lobur.service.PatientService;
 import com.yaroslav.lobur.utils.CommandResult;
@@ -15,6 +16,8 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class ViewPatientCommand implements Command {
 
@@ -28,13 +31,13 @@ public class ViewPatientCommand implements Command {
         try {
             long hospitalCardId = NumberUtils.toLong(request.getParameter("cardId"));
             HospitalCard hospitalCard = patientService.getHospitalCardById(hospitalCardId);
-            hospitalCard.setPatient(patientService.getPatientById(hospitalCard.getPatient().getId()));
             AppointmentService appointmentService = (AppointmentService) request.getServletContext().getAttribute("appointmentService");
             session.setAttribute("hospitalCard", hospitalCard);
             try {
-                Appointment appointment = appointmentService.getAppointmentByHospitalCard(hospitalCard);
-                logger.debug("{}", appointment);
-                session.setAttribute("appointment", appointment);
+                List<Appointment> appointments = appointmentService.getAppointmentByHospitalCardId(hospitalCard.getId());
+                boolean allDone = appointments.stream().filter(a -> a.getStatus() == AppointmentStatus.DONE).count() == appointments.size();
+                session.setAttribute("allDone", allDone);
+                session.setAttribute("appointments", appointments);
             } catch (EntityNotFoundException e) {
                 session.removeAttribute("appointment");
                 logger.debug("No appointments found for patient {} {}", hospitalCard.getPatient().getFirstname(), hospitalCard.getPatient().getLastname());

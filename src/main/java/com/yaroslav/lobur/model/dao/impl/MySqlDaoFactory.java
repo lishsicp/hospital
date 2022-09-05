@@ -3,50 +3,44 @@ package com.yaroslav.lobur.model.dao.impl;
 import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.dao.*;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class MySqlDaoFactory extends DaoFactory {
 
-    private static MySqlDaoFactory instance;
-
-    public static DaoFactory getInstance() {
-        if (instance == null) {
-            instance = new MySqlDaoFactory();
-        }
-        return instance;
+    public MySqlDaoFactory(DataSource dataSource){
+        super(dataSource);
     }
-
-    private MySqlDaoFactory(){}
 
     @Override
     public UserDao getUserDao() {
-        return MySqlUserDao.getInstance();
+        return new MySqlUserDao();
     }
 
     @Override
     public PatientDao getPatientDao() {
-        return MySqlPatientDao.getInstance();
+        return new MySqlPatientDao();
     }
 
     @Override
     public DoctorDao getDoctorDao() {
-        return MySqlDoctorDao.getInstance();
+        return new MySqlDoctorDao();
     }
 
     @Override
     public HospitalCardDao getHospitalCardDao() {
-        return MySqlHospitalCardDao.getInstance();
+        return new MySqlHospitalCardDao();
     }
 
     @Override
     public AppointmentDao getAppointmentDao() {
-        return MySqlAppointmentDao.getInstance();
+        return new MySqlAppointmentDao();
     }
 
     @Override
     public CategoryDao getCategoryDao() {
-        return MySqlCategoryDao.getInstance();
+        return new MySqlCategoryDao();
     }
 
     @Override

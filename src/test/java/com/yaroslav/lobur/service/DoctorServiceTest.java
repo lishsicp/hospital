@@ -1,90 +1,124 @@
 package com.yaroslav.lobur.service;
 
-import com.yaroslav.lobur.model.dao.DaoFactory;
-import com.yaroslav.lobur.model.entity.Category;
-import com.yaroslav.lobur.model.entity.Doctor;
-import com.yaroslav.lobur.model.entity.User;
-import com.yaroslav.lobur.model.entity.enums.Locale;
+import com.yaroslav.lobur.exceptions.InputErrorsMessagesException;
+import com.yaroslav.lobur.exceptions.UnknownSqlException;
+import com.yaroslav.lobur.model.dao.*;
+import com.yaroslav.lobur.model.entity.*;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
-import com.yaroslav.lobur.model.entity.enums.Role;
-import com.yaroslav.lobur.utils.PasswordEncryptor;
-import com.yaroslav.lobur.validator.DoctorValidator;
-import db.MySqlDatasource;
-import org.junit.jupiter.api.*;
+import org.checkerframework.checker.units.qual.C;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.io.FileNotFoundException;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class DoctorServiceTest {
 
-    private static DoctorService doctorService;
+    @Mock
+    DaoFactory mockDaoFactory;
+    @Mock
+    Connection mockConn;
+    @Mock
+    DoctorDao mockDoctorDao;
+    @Mock
+    CategoryDao mockCategoryDao;
+    @Mock
+    UserDao mockUserDao;
+    @InjectMocks
+    DoctorService doctorService;
 
-    @BeforeAll
-    static void setUp() {
-        DaoFactory.init(MySqlDatasource.getDataSource());
-        doctorService = new DoctorService();
+    Doctor doctor;
+    User user;
+    Category category;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        try(var ignored = MockitoAnnotations.openMocks(this)) {
+            when(mockDaoFactory.open()).thenReturn(mockConn);
+            when(mockDaoFactory.beginTransaction()).thenReturn(mockConn);
+            when(mockDoctorDao.getNumberOfRecords()).thenReturn(1);
+            doNothing().when(mockDaoFactory).commit(mockConn);
+            doNothing().when(mockDaoFactory).rollback(mockConn);
+            doNothing().when(mockDaoFactory).close(mockConn);
+            doctor = new Doctor();
+            doctor.setId(1);
+            category = new Category();
+            category.setId(1);
+            user = new User();
+            user.setId(1);
+            doctor.setUser(user);
+        }
     }
 
     @Test
-    @Order(3)
-    void getAllDoctors() {
-        List<Doctor> doctorList = doctorService.getAllDoctors();
-        assertEquals(4, doctorList.size());
-        assertEquals(doctorList.size(), doctorService.getNumberOfRecords());
+    void testGetAllDoctors() {
+        var doctors = List.of(doctor);
+        when(mockDoctorDao.findAllDoctors(mockDaoFactory.open())).thenReturn(doctors);
+        assertEquals(doctors, doctorService.getAllDoctors());
+        assertEquals(doctors.size(), doctorService.getNumberOfRecords());
     }
 
     @Test
-    void getDoctorsByCategory() {
-        List<Doctor> doctorList = doctorService.getDoctorsByCategory(3);
-        long countSurgeons = doctorList.stream().filter(d -> d.getCategory().getId() == 3).count();
-        assertEquals(1, countSurgeons);
-        assertEquals(doctorList.size(), countSurgeons);
+    void testGetDoctorsByCategory() {
+        long categoryId = category.getId();
+        var doctors = List.of(doctor);
+        when(mockDoctorDao.findDoctorsByCategory(mockDaoFactory.open(), categoryId)).thenReturn(doctors);
+        assertEquals(doctors, doctorService.getDoctorsByCategory(categoryId));
+        assertEquals(doctors.size(), doctorService.getNumberOfRecords());
     }
 
     @Test
-    void getAllDoctorsOrderBy() {
-        List<Doctor> doctorList = doctorService.getAllDoctorsOrderBy(OrderBy.NUMBER_OF_PATIENTS, 0,100);
-        List<Doctor> doctorListSorted = new ArrayList<>(doctorList);
-        assertEquals(doctorList, doctorListSorted);
+    void testGetAllDoctorsOrderBy() {
+        var doctors = List.of(doctor);
+        when(mockDoctorDao.findDoctorsOrderBy(mockDaoFactory.open(), OrderBy.NAME, 0, 99)).thenReturn(doctors);
+        assertEquals(doctors, doctorService.getAllDoctorsOrderBy(OrderBy.NAME, 0, 99));
+        assertEquals(doctors.size(), doctorService.getNumberOfRecords());
     }
 
     @Test
-    void getAllCategories() {
-        List<Category> categories = doctorService.getAllCategories();
-        assertEquals(3, categories.size());
+    void testGetAllCategories() {
+        var categories = List.of(category);
+        when(mockCategoryDao.findAllCategories(mockDaoFactory.open())).thenReturn(categories);
+        assertEquals(categories, doctorService.getAllCategories());
     }
 
     @Test
-    @Order(1)
-    void addDoctor() {
-        User user = new User();
-        user.setLogin("login");
-        user.setPassword(PasswordEncryptor.getSHA1String("Password1"));
-        user.setFirstname("Test");
-        user.setLastname("Test");
-        user.setDateOfBirth(java.sql.Date.valueOf(LocalDate.now()));
-        user.setGender("MALE");
-        user.setEmail("test@gg.com");
-        user.setPhone("(000)-000-00-00");
-        user.setLocale(Locale.UK);
-        user.setAddress("");
-        user.setRole(Role.DOCTOR);
-        Doctor doctor = new Doctor();
-        doctor.setUser(user);
-        Category category = new Category();
-        category.setId(1);
-        doctor.setCategory(category);
-        doctorService.addDoctor(doctor);
-        Doctor doctor1 = doctorService.getDoctorByUser(user);
-        doctor.setId(doctor1.getId());
-        assertEquals(doctor, doctor1);
-        user.setPassword("Password1");
-        assertEquals(0, DoctorValidator.getInstance().validate(doctor).size());
+    void testAddDoctorWithNoExceptions() throws SQLException {
+        try (Connection connection = mockDaoFactory.beginTransaction()) {
+            when(mockUserDao.insertUser(connection, user)).thenReturn(user.getId());
+            when(mockDoctorDao.insertDoctor(connection, doctor)).thenReturn(doctor.getId());
+            doNothing().when(mockUserDao).checkUniqueFields(connection, user);
+            assertDoesNotThrow(()-> doctorService.addDoctor(doctor));
+            mockDaoFactory.commit(connection);
+            mockDaoFactory.endTransaction(connection);
+        }
+    }
+
+    @Test
+    void testAddDoctorWithExceptions() throws SQLException {
+        try (Connection connection = mockDaoFactory.beginTransaction()) {
+            doThrow(InputErrorsMessagesException.class).when(mockUserDao).checkUniqueFields(connection, user);
+            when(mockUserDao.insertUser(connection, user)).thenReturn(user.getId());
+            when(mockDoctorDao.insertDoctor(connection, doctor)).thenReturn(doctor.getId());
+            assertThrows(InputErrorsMessagesException.class, () -> doctorService.addDoctor(doctor));
+            doThrow(UnknownSqlException.class).when(mockUserDao).checkUniqueFields(connection, user);
+            assertThrows(UnknownSqlException.class, () -> doctorService.addDoctor(doctor));
+        } finally {
+            mockDaoFactory.rollback(mockConn);
+        }
+    }
+
+    @Test
+    void testGetDoctorByUser() {
+        when(mockDoctorDao.findDoctorByUserId(mockDaoFactory.open(), user.getId())).thenReturn(doctor);
+        assertEquals(doctor, doctorService.getDoctorByUser(user));
     }
 }

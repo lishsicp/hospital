@@ -32,6 +32,7 @@ public class AssignDoctorCommand implements Command {
             patientService.updatePatient(patient);
         } catch (UnknownSqlException | EntityNotFoundException e) {
             logger.error("Error when assigning doctor", e);
+            request.setAttribute("sql", "sql.error");
         }
         return new CommandResult(request.getContextPath() + "/controller?action=list_patients", true);
     }

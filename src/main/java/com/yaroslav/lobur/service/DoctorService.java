@@ -7,67 +7,38 @@ import com.yaroslav.lobur.model.entity.Category;
 import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
-import com.yaroslav.lobur.model.entity.enums.Role;
 
 import java.sql.Connection;
 import java.util.List;
 
 public class DoctorService {
+    private final DaoFactory daoFactory;
 
-    private static final UserDao userDao;
-    private static final CategoryDao categoryDao;
-    private static final DoctorDao doctorDao;
+    private final UserDao userDao;
+    private final CategoryDao categoryDao;
+    private final DoctorDao doctorDao;
 
-    private static final DaoFactory daoFactory;
-
-    static {
-        daoFactory = DaoFactory.getDaoFactory();
-        userDao = daoFactory.getUserDao();
-        categoryDao = daoFactory.getCategoryDao();
-        doctorDao = daoFactory.getDoctorDao();
+    public DoctorService(DaoFactory daoFactory, UserDao userDao, CategoryDao categoryDao, DoctorDao doctorDao) {
+        this.daoFactory = daoFactory;
+        this.userDao = userDao;
+        this.categoryDao = categoryDao;
+        this.doctorDao = doctorDao;
     }
 
     public List<Doctor> getAllDoctors() {
         Connection con = null;
-        List<Doctor> doctors;
         try {
             con = daoFactory.open();
-            doctors = doctorDao.findAllDoctors(con);
-            List<User> users = userDao.findAllByRole(con, Role.DOCTOR);
-            List<Category> categories = categoryDao.findAllCategories(con);
-            setDoctorFields(doctors, users, categories);
+            return doctorDao.findAllDoctors(con);
         } finally {
             daoFactory.close(con);
-        }
-        return doctors;
-    }
-
-    private void setDoctorFields(List<Doctor> doctors, List<User> users, List<Category> categories) {
-        for (Doctor d : doctors) {
-            for (User u : users) {
-                if (d.getUser().getId() == u.getId()) {
-                    d.setUser(u);
-                }
-            }
-            for (Category c : categories) {
-                if (d.getCategory().getId() == c.getId()) {
-                    d.setCategory(c);
-                }
-            }
         }
     }
 
     public List<Doctor> getDoctorsByCategory(long categoryId) {
         Connection con = daoFactory.open();
-        List<Doctor> doctors;
-        List<User> users;
-        List<Category> categories;
         try {
-            doctors = doctorDao.findDoctorsByCategory(con, categoryId);
-            users = userDao.findAllByRole(con, Role.DOCTOR);
-            categories = categoryDao.findAllCategories(con);
-            setDoctorFields(doctors, users, categories);
-            return doctors;
+            return doctorDao.findDoctorsByCategory(con, categoryId);
         } finally {
             daoFactory.close(con);
         }
@@ -75,18 +46,11 @@ public class DoctorService {
 
     public List<Doctor> getAllDoctorsOrderBy(OrderBy order, int offset, int noOfRecords) {
         Connection con = daoFactory.open();
-        List<Doctor> doctors;
-        List<User> users;
-        List<Category> categories;
         try {
-            doctors = doctorDao.findDoctorsOrderBy(con, order, offset, noOfRecords);
-            users = userDao.findAllByRole(con, Role.DOCTOR);
-            categories = categoryDao.findAllCategories(con);
-            setDoctorFields(doctors, users, categories);
+            return doctorDao.findDoctorsOrderBy(con, order, offset, noOfRecords);
         } finally {
             daoFactory.close(con);
         }
-        return doctors;
     }
 
     public int getNumberOfRecords() {
@@ -95,14 +59,12 @@ public class DoctorService {
 
     public List<Category> getAllCategories() {
         Connection con = null;
-        List<Category> categories;
         try {
             con = daoFactory.open();
-            categories = categoryDao.findAllCategories(daoFactory.open());
+            return categoryDao.findAllCategories(con);
         } finally {
             daoFactory.close(con);
         }
-        return categories;
     }
 
     public void addDoctor(Doctor doctor) {
@@ -124,16 +86,11 @@ public class DoctorService {
 
     public Doctor getDoctorByUser(User user) {
         Connection con = null;
-        Doctor doctor;
         try {
             con = daoFactory.open();
-            doctor = doctorDao.findDoctorByUserId(con, user.getId());
-            doctor.setUser(user);
+            return doctorDao.findDoctorByUserId(con, user.getId());
         } finally {
             daoFactory.close(con);
         }
-        return doctor;
     }
-
-
 }

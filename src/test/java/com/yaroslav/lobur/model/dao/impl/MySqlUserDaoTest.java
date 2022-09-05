@@ -25,18 +25,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MySqlUserDaoTest {
 
-    static DaoFactory daoFactory;
-    static UserDao userDao;
+    DaoFactory daoFactory = new MySqlDaoFactory(MySqlDatasource.getDataSource());
+    UserDao userDao = daoFactory.getUserDao();
 
     @BeforeAll
-    static void setUp() {
-        DaoFactory.init(MySqlDatasource.getDataSource());
-        daoFactory = DaoFactory.getDaoFactory();
-        userDao = daoFactory.getUserDao();
+    static void setUp() throws SQLException, FileNotFoundException {
+        MySqlDatasource.resetDatabase();
     }
 
     @Test
-    void findAllUsers_ReturnsFiveUsers() throws SQLException {
+    void testFindAllUsers_ReturnsFiveUsers() throws SQLException {
         try (Connection con = daoFactory.open()) {
             List<User> users = userDao.findAllUsers(con);
             assertEquals(5, users.size());
@@ -44,7 +42,7 @@ class MySqlUserDaoTest {
     }
 
     @Test
-    void findAllByRole_ReturnsThreeUsers_IfUserRoleIsDoctor() throws SQLException {
+    void testFindAllByRole_ReturnsThreeUsers_IfUserRoleIsDoctor() throws SQLException {
         try (Connection con = daoFactory.open()) {
             List<User> users = userDao.findAllByRole(con, Role.DOCTOR);
             assertEquals(3, users.size());
@@ -52,7 +50,7 @@ class MySqlUserDaoTest {
     }
 
     @Test
-    void findUserById_ReturnUser_UserRoleIdOne()throws SQLException {
+    void testFindUserById_ReturnUser_UserRoleIdOne()throws SQLException {
         try (Connection con = daoFactory.open()) {
             User user = userDao.findUserById(con, 1L);
             assertEquals(1, user.getRole().getRoleId());
@@ -60,7 +58,7 @@ class MySqlUserDaoTest {
     }
 
     @Test
-    void findUserByEmail_ReturnUser() throws SQLException {
+    void testFindUserByEmail_ReturnUser() throws SQLException {
         try (Connection con = daoFactory.open()) {
             String userEmail = "lobur13@gmail.com";
             assertEquals(userEmail, userDao.findUserByEmail(con, "lobur13@gmail.com").getEmail());
@@ -69,7 +67,7 @@ class MySqlUserDaoTest {
 
     @Test
     @Order(1)
-    void insertUser() throws SQLException {
+    void testInsertUser() throws SQLException {
         try (Connection con = daoFactory.open()) {
             User user = userDao.findUserById(con, 2L);
             user.setEmail("test@email.com");
@@ -83,7 +81,7 @@ class MySqlUserDaoTest {
 
     @Test
     @Order(2)
-    void updateUser() throws SQLException {
+    void testUpdateUser() throws SQLException {
         try (Connection con = daoFactory.open()) {
             User user = userDao.findUserById(con, 6L);
             user.setEmail("test2@email.com");
@@ -97,7 +95,7 @@ class MySqlUserDaoTest {
 
     @Test
     @Order(3)
-    void deleteUser() throws SQLException {
+    void testDeleteUser() throws SQLException {
         try (Connection con = daoFactory.open()) {
             int beforeDelete = userDao.findAllUsers(con).size();
             userDao.deleteUser(con, 6L);
@@ -106,15 +104,13 @@ class MySqlUserDaoTest {
         }
     }
 
-
-
     @Test
-    void updatePassword() {
+    void testUpdatePassword() {
         assertThrows(UnsupportedOperationException.class, () -> userDao.updatePassword(null, null));
     }
 
     @Test
-    void checkUniqueFields() throws SQLException {
+    void testCheckUniqueFields() throws SQLException {
         try (Connection con = daoFactory.open()) {
             User user = userDao.findUserById(con, 1L);
             userDao.checkUniqueFields(con, user);

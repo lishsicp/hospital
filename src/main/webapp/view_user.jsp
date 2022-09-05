@@ -4,7 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setLocale value="${sessionScope.language}"/>
 <fmt:setBundle basename="message"/>
-<c:set var="user" scope="page" value="${sessionScope.viewUser}"/>
+<%--<c:set var="user" scope="page" value="${sessionScope.viewUser}"/>--%>
 
 <!DOCTYPE>
 <html lang="${language}">
@@ -16,7 +16,7 @@
 <div class="d-flex" id="wrapper">
     <%-- Page actions --%>
     <c:import
-            url="${current_user.role == 'ADMIN' ? 'adminActions.jsp' : current_user.role == 'DOCTOR' ? 'doctorActions.jsp' : 'nurseActions.jsp'}"/>
+            url="${viewUser.role == 'ADMIN' ? 'adminActions.jsp' : viewUser.role == 'DOCTOR' ? 'doctorActions.jsp' : 'nurseActions.jsp'}"/>
     <div id="page-content-wrapper">
         <%-- Top navigation--%>
         <c:import url="topnav.jsp"/>
@@ -68,7 +68,7 @@
                                     <h6 class="mb-0"><fmt:message key="patient.age"/></h6>
                                 </div>
                                 <div class="col-sm-9 text-secondary">
-                                    <ctg:getAge></ctg:getAge>
+                                    <ctg:getAge date="${viewUser.dateOfBirth}"></ctg:getAge>
                                 </div>
                             </div>
                             <hr>

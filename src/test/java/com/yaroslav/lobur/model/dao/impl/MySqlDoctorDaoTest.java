@@ -1,6 +1,7 @@
 package com.yaroslav.lobur.model.dao.impl;
 
 import com.yaroslav.lobur.exceptions.EntityNotFoundException;
+import com.yaroslav.lobur.model.dao.CategoryDao;
 import com.yaroslav.lobur.model.dao.DaoFactory;
 import com.yaroslav.lobur.model.dao.DoctorDao;
 import com.yaroslav.lobur.model.entity.Category;
@@ -10,6 +11,8 @@ import com.yaroslav.lobur.model.entity.enums.OrderBy;
 import db.MySqlDatasource;
 import org.junit.jupiter.api.*;
 
+import javax.sql.DataSource;
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,18 +24,17 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MySqlDoctorDaoTest {
 
-    static DaoFactory daoFactory;
-    static DoctorDao doctorDao;
+    DataSource dataSource = MySqlDatasource.getDataSource();
+    DaoFactory daoFactory = new MySqlDaoFactory(dataSource);
+    DoctorDao doctorDao = daoFactory.getDoctorDao();
 
-    @BeforeAll
-    static void setUp() {
-        DaoFactory.init(MySqlDatasource.getDataSource());
-        daoFactory = DaoFactory.getDaoFactory();
-        doctorDao = daoFactory.getDoctorDao();
+    @AfterAll
+    static void cleanUp() throws SQLException, FileNotFoundException {
+        MySqlDatasource.resetDatabase();
     }
 
     @Test
-    void findAllDoctors() throws SQLException {
+    void testFindAllDoctors() throws SQLException {
         try (Connection con = daoFactory.open()) {
             doctorDao.findAllDoctors(con);
             assertEquals(3, doctorDao.getNumberOfRecords());
@@ -40,7 +42,7 @@ class MySqlDoctorDaoTest {
     }
 
     @Test
-    void findDoctorsOrderBy() throws SQLException {
+    void testFindDoctorsOrderBy() throws SQLException {
         try (Connection con = daoFactory.open()) {
             List<Doctor> doctorList = doctorDao.findDoctorsOrderBy(con, OrderBy.NUMBER_OF_PATIENTS, 0, 5);
             List<Doctor> doctorListSorted = new ArrayList<>(doctorList);
@@ -50,7 +52,7 @@ class MySqlDoctorDaoTest {
     }
 
     @Test
-    void findDoctorsByCategory() throws SQLException {
+    void testFindDoctorsByCategory() throws SQLException {
         try (Connection con = daoFactory.open()) {
             List<Doctor> doctorList = doctorDao.findDoctorsByCategory(con, 1);
             assertEquals(1, doctorList.get(0).getCategory().getId());
@@ -58,21 +60,21 @@ class MySqlDoctorDaoTest {
     }
 
     @Test
-    void findDoctorById() throws SQLException {
+    void testFindDoctorById() throws SQLException {
         try (Connection con = daoFactory.open()) {
             assertThrows(EntityNotFoundException.class, () -> doctorDao.findDoctorById(con, 1000));
         }
     }
 
     @Test
-    void findDoctorByUserId() throws SQLException {
+    void testFindDoctorByUserId() throws SQLException {
         try (Connection con = daoFactory.open()) {
             assertThrows(EntityNotFoundException.class, () -> doctorDao.findDoctorByUserId(con, 1000));
         }
     }
 
     @Test
-    void insertDoctor() throws SQLException {
+    void testInsertDoctor() throws SQLException {
         try (Connection con = daoFactory.open()) {
             Doctor doctor = doctorDao.findDoctorById(con, 1);
             User user = new User();

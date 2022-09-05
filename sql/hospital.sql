@@ -263,9 +263,9 @@ VALUES (1, 'Воспаление апендикса', 1),
 
 INSERT INTO hospital.appointment
 (id, start_date, end_date, title, status, type, user_id, hospital_card_id)
-VALUES (1, curdate(), adddate(curdate(), interval 30 day), 'Операция по видаленню апендикса', 'ONGOING', 'OPERATION', 3,
+VALUES (1, curdate(), adddate(curdate(), interval 30 day), 'Операция по видаленню апендикса', 'DONE', 'OPERATION', 3,
         1),
-       (2, curdate(), adddate(curdate(), interval 14 day), 'Таблетки Септефрил', 'ONGOING', 'MEDICATION', 4, 2),
-       (3, curdate(), adddate(curdate(), interval 21 day), 'Холодний компрес, перевязка', 'ONGOING', 'PROCEDURE', 4,
+       (2, curdate(), adddate(curdate(), interval 14 day), 'Таблетки Септефрил', 'DONE', 'MEDICATION', 4, 2),
+       (3, curdate(), NULL, 'Холодний компрес, перевязка', 'ONGOING', 'PROCEDURE', 4,
         3);
-DELETE FROM patient WHERE id='g';
+

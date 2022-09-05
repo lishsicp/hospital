@@ -11,6 +11,7 @@ import db.MySqlDatasource;
 import org.junit.jupiter.api.*;
 import org.mockito.Mock;
 
+import javax.sql.DataSource;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,14 +23,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MySqlPatientDaoTest {
 
-    static DaoFactory daoFactory;
-    static PatientDao patientDao;
+    DataSource dataSource = MySqlDatasource.getDataSource();
+    DaoFactory daoFactory = new MySqlDaoFactory(dataSource);
+    PatientDao patientDao = daoFactory.getPatientDao();
 
     @BeforeAll
     static void setUp() throws SQLException, FileNotFoundException {
-        DaoFactory.init(MySqlDatasource.getDataSource());
-        daoFactory = DaoFactory.getDaoFactory();
-        patientDao = daoFactory.getPatientDao();
         MySqlDatasource.resetDatabase();
     }
 

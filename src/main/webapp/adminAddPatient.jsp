@@ -76,12 +76,6 @@
                         </c:if>
                     </div>
                 </form>
-                <c:if test="${sessionScope.success != null}">
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong><fmt:message key="${sessionScope.success}" /></strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="${sessionScope.remove("success")}"></button>
-                    </div>
-                </c:if>
                 <c:if test="${requestScope.errors != null}">
                     <div class="text-danger">
                         <c:forEach var="error" items="${requestScope.errors}">

@@ -8,7 +8,7 @@ import java.util.List;
 public interface AppointmentDao {
     long insertAppointment(Connection connection, Appointment appointment);
     void updateAppointment(Connection connection, Appointment appointment);
-    Appointment findAppointmentByHospitalCardId(Connection connection, long id);
+    List<Appointment> findAppointmentsByHospitalCardId(Connection connection, long id);
 
     Appointment findAppointmentById(Connection connection, long id);
 

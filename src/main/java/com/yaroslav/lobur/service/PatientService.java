@@ -6,10 +6,8 @@ import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.dao.DaoFactory;
 import com.yaroslav.lobur.model.dao.HospitalCardDao;
 import com.yaroslav.lobur.model.dao.PatientDao;
-import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.HospitalCard;
 import com.yaroslav.lobur.model.entity.Patient;
-import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,14 +19,14 @@ public class PatientService {
 
     private static final Logger logger = LoggerFactory.getLogger(PatientService.class);
 
-    private static final DaoFactory daoFactory;
-    private static final PatientDao patientDao;
-    private static final HospitalCardDao hospitalCardDao;
+    private final DaoFactory daoFactory;
+    private final PatientDao patientDao;
+    private final HospitalCardDao hospitalCardDao;
 
-    static {
-        daoFactory = DaoFactory.getDaoFactory();
-        patientDao = daoFactory.getPatientDao();
-        hospitalCardDao = daoFactory.getHospitalCardDao();
+    public PatientService(DaoFactory daoFactory, PatientDao patientDao, HospitalCardDao hospitalCardDao) {
+        this.daoFactory = daoFactory;
+        this.patientDao = patientDao;
+        this.hospitalCardDao = hospitalCardDao;
     }
 
     public Patient getPatientById(long id) {
@@ -37,12 +35,6 @@ public class PatientService {
         try {
             con = daoFactory.open();
             patient = patientDao.findPatientById(con, id);
-            if (patient.getDoctor() != null) {
-                Doctor doctor = daoFactory.getDoctorDao().findDoctorById(con, patient.getDoctor().getId());
-                User user = daoFactory.getUserDao().findUserById(con, doctor.getUser().getId());
-                doctor.setUser(user);
-                patient.setDoctor(doctor);
-            }
         } finally {
             daoFactory.close(con);
         }
@@ -78,15 +70,7 @@ public class PatientService {
         List<HospitalCard> hospitalCards;
         try {
             con = daoFactory.open();
-            List<Patient> patients =  patientDao.findAllPatients(con);
             hospitalCards =  hospitalCardDao.findAllHospitalCardsForDoctor(con, id, offset, noOfRecords);
-            hospitalCards.forEach(hospitalCard -> hospitalCard
-                            .setPatient(patients
-                                    .stream()
-                                    .filter(patient -> patient.getId() == hospitalCard.getPatient().getId())
-                                    .findFirst()
-                                    .orElse(null)));
-
         } finally {
             daoFactory.close(con);
         }
@@ -148,6 +132,7 @@ public class PatientService {
             daoFactory.commit(con);
         } catch (DBExceptionMessages | UnknownSqlException e) {
             daoFactory.rollback(con);
+            logger.error("Error when deleting a patient with id {}", id);
             throw e;
         } finally {
             daoFactory.endTransaction(con);

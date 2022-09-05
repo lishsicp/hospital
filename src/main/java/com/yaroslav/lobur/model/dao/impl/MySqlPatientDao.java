@@ -4,10 +4,14 @@ import com.yaroslav.lobur.exceptions.InputErrorsMessagesException;
 import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.dao.GenericDao;
 import com.yaroslav.lobur.model.dao.PatientDao;
+import com.yaroslav.lobur.model.entity.Category;
 import com.yaroslav.lobur.model.entity.Doctor;
 import com.yaroslav.lobur.model.entity.Patient;
+import com.yaroslav.lobur.model.entity.User;
+import com.yaroslav.lobur.model.entity.enums.Locale;
 import com.yaroslav.lobur.model.entity.enums.OrderBy;
 import com.yaroslav.lobur.model.entity.enums.PatientStatus;
+import com.yaroslav.lobur.model.entity.enums.Role;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -15,18 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 public class MySqlPatientDao extends GenericDao<Patient> implements PatientDao {
-
-    private static MySqlPatientDao instance;
-
-    public static PatientDao getInstance() {
-        if (instance == null) {
-            instance = new MySqlPatientDao();
-        }
-        return instance;
-    }
-
-    private MySqlPatientDao(){}
-
 
 private static final String INSERT_TEMPLATE = "INSERT INTO patient\n" +
             "(status, doctor_id, firstname, lastname, date_of_birth, gender, email)" +
@@ -37,19 +29,37 @@ private static final String INSERT_TEMPLATE = "INSERT INTO patient\n" +
     @Override
     protected Patient mapToEntity(ResultSet rs) throws SQLException {
         Patient patient = new Patient();
-        patient.setId(rs.getLong("id"));
+        patient.setId(rs.getLong("p.id"));
         patient.setStatus(PatientStatus.valueOf(rs.getString("status")));
         long doctorId = rs.getLong("doctor_id");
         if (doctorId > 0) {
             Doctor doctor = new Doctor();
+            User user = new User();
+            Category category = new Category();
             doctor.setId(doctorId);
+            category.setId(rs.getLong("c.id"));
+            category.setName(rs.getString("category"));
+            user.setId(rs.getLong("u.id"));
+            user.setLogin("");
+            user.setPassword("");
+            user.setFirstname(rs.getString("u.firstname"));
+            user.setLastname(rs.getString("u.lastname"));
+            user.setDateOfBirth(rs.getDate("u.date_of_birth"));
+            user.setGender(rs.getString("u.gender"));
+            user.setEmail(rs.getString("u.email"));
+            user.setPhone(rs.getString("phone"));
+            user.setAddress(rs.getString("address"));
+            user.setLocale(Locale.UK);
+            user.setRole(Role.getById(rs.getInt("role_id")));
+            doctor.setUser(user);
+            doctor.setCategory(category);
             patient.setDoctor(doctor);
         }
-        patient.setFirstname(rs.getString("firstname"));
-        patient.setLastname(rs.getString("lastname"));
-        patient.setDateOfBirth(rs.getDate("date_of_birth"));
-        patient.setGender(rs.getString("gender"));
-        patient.setEmail(rs.getString("email"));
+        patient.setFirstname(rs.getString("p.firstname"));
+        patient.setLastname(rs.getString("p.lastname"));
+        patient.setDateOfBirth(rs.getDate("p.date_of_birth"));
+        patient.setGender(rs.getString("p.gender"));
+        patient.setEmail(rs.getString("p.email"));
         return patient;
     }
 
@@ -94,21 +104,39 @@ private static final String INSERT_TEMPLATE = "INSERT INTO patient\n" +
 
     @Override
     public Patient findPatientById(Connection connection, long id) {
-        return findEntity(connection, "SELECT * FROM patient WHERE id = ?", id);
+        return findEntity(connection, "SELECT * FROM patient p\n" +
+                "    LEFT JOIN doctor d on p.doctor_id = d.id\n" +
+                "    LEFT JOIN user u on d.user_id = u.id\n" +
+                "    LEFT JOIN category c on d.category_id = c.id" +
+                "         WHERE p.id = ?", id);
     }
 
     public List<Patient> findAllPatients(Connection connection) {
-        return findAll(connection, "SELECT * FROM patient");
+        return findAll(connection, "SELECT * FROM patient p\n" +
+                "    LEFT JOIN doctor d on p.doctor_id = d.id\n" +
+                "    LEFT JOIN user u on d.user_id = u.id\n" +
+                "    LEFT JOIN category c on d.category_id = c.id");
     }
 
     @Override
     public List<Patient> findPatientsWithoutDoctor(Connection connection, OrderBy order, int offset, int noOfRecords) {
-        return findAll(connection, String.format("SELECT SQL_CALC_FOUND_ROWS * FROM patient WHERE doctor_id IS NULL ORDER BY %s LIMIT %d, %d", order.getField(), offset, noOfRecords));
+        return findAll(connection, String.format("SELECT SQL_CALC_FOUND_ROWS * FROM patient p\n" +
+                "    LEFT JOIN doctor d on p.doctor_id = d.id\n" +
+                "    LEFT JOIN user u on d.user_id = u.id\n" +
+                "    LEFT JOIN category c on d.category_id = c.id \n" +
+                "                             WHERE doctor_id IS NULL \n" +
+                "                             ORDER BY p.%s \n" +
+                "                             LIMIT %d, %d", order.getField(), offset, noOfRecords));
     }
 
     @Override
     public List<Patient> findPatientsOrderBy(Connection connection, OrderBy order, int offset, int noOfRecords) {
-        return findAll(connection, String.format("SELECT SQL_CALC_FOUND_ROWS * FROM patient ORDER BY %s LIMIT %d, %d", order.getField(), offset, noOfRecords));
+        return findAll(connection, String.format("SELECT SQL_CALC_FOUND_ROWS * FROM patient p\n" +
+                "    LEFT JOIN doctor d on p.doctor_id = d.id\n" +
+                "    LEFT JOIN user u on d.user_id = u.id\n" +
+                "    LEFT JOIN category c on d.category_id = c.id \n" +
+                "                             ORDER BY p.%s \n" +
+                "                             LIMIT %d, %d", order.getField(), offset, noOfRecords));
     }
 
     public long insertPatient(Connection connection, Patient patient) {

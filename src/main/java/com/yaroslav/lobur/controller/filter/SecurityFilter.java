@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 @WebFilter(filterName = "SecurityFilter", urlPatterns = {"/*"})
@@ -31,7 +30,6 @@ public class SecurityFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String path = httpRequest.getServletPath();
         String command = httpRequest.getParameter("action");
-        logger.info("Request URL : {}", httpRequest.getRequestURL());
         logger.info("Servlet path {}", path);
         if (path.endsWith("hospital/")
                 || path.endsWith("sign_in.jsp")
@@ -65,6 +63,5 @@ public class SecurityFilter implements Filter {
         } else {
             chain.doFilter(request, response);
         }
-        //chain.doFilter(request, response);
     }
 }

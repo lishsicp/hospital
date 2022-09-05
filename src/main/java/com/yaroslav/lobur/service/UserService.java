@@ -19,13 +19,15 @@ public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    private static final UserDao userDao;
-    private static final DaoFactory daoFactory;
+    private final DaoFactory daoFactory;
+    private final UserDao userDao;
 
-    static {
-        daoFactory = DaoFactory.getDaoFactory();
-        userDao = daoFactory.getUserDao();
+
+    public UserService(DaoFactory daoFactory, UserDao userDao) {
+        this.daoFactory = daoFactory;
+        this.userDao = userDao;
     }
+
     public long registerUser(User user) {
         Connection con = null;
         try {

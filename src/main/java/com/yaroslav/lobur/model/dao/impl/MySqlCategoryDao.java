@@ -12,17 +12,6 @@ import java.util.List;
 
 public class MySqlCategoryDao extends GenericDao<Category> implements CategoryDao {
 
-    private static MySqlCategoryDao instance;
-
-    public static MySqlCategoryDao getInstance() {
-        if (instance == null) {
-            instance = new MySqlCategoryDao();
-        }
-        return instance;
-    }
-
-    private MySqlCategoryDao(){}
-
     @Override
     protected Category mapToEntity(ResultSet rs) throws SQLException {
         Category category = new Category();

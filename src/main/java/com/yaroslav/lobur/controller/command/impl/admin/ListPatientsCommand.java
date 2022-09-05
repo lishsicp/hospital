@@ -43,7 +43,6 @@ public class ListPatientsCommand implements Command {
         try {
             int offset = Math.max((pageNo - 1) * recordsPerPage, 0);
             logger.debug("offset {}", offset);
-            var doctors = doctorService.getAllDoctors();
             var patients = patientService.getAllPatientsSorted(order, offset, recordsPerPage);
             var categories = doctorService.getAllCategories();
             int noOfRecords = patientService.getNumberOfRecords();
@@ -52,15 +51,6 @@ public class ListPatientsCommand implements Command {
             if (noDoctor) {
                 patients = patientService.getPatientsWithoutDoctor(order, offset, recordsPerPage);
                 noOfRecords = patientService.getNumberOfRecords();
-                logger.debug("{}", patients);
-            } else {
-                if (patients != null)
-                    patients.stream()
-                            .filter(p -> p.getDoctor() != null)
-                            .forEach(p -> p.setDoctor(doctors
-                                    .stream()
-                                    .filter(d -> d.getId() == p.getDoctor().getId())
-                                    .findFirst().orElse(null)));
             }
             session.setAttribute("categories", categories);
             session.setAttribute("patients", patients);
@@ -69,7 +59,7 @@ public class ListPatientsCommand implements Command {
             request.setAttribute("currentPageNo", pageNo);
         } catch (UnknownSqlException | EntityNotFoundException e) {
             logger.error("Error - {}",  e.getMessage());
-            throw e;
+            request.setAttribute("sql", "sql.error");
         }
         String page = PagePathManager.getProperty("page.admin.patients");
         session.setAttribute("currentPage", page);

@@ -57,6 +57,11 @@
                 </c:forEach>
                 </tbody>
             </table>
+            <c:if test="${sql ne null}">
+                <div class="text-danger" id="sql">
+                    <fmt:message key="${sql}"/>
+                </div>
+            </c:if>
         </div>
     </div>
 </div>

@@ -22,17 +22,6 @@ public class MySqlUserDao extends GenericDao<User> implements UserDao {
             "SELECT count(id) FROM user WHERE phone = ? AND id != ?";
     private static final String FIND_ALL_BY_ROLE = "SELECT * FROM user WHERE role_id = ?";
 
-    private static MySqlUserDao instance;
-
-    public static UserDao getInstance() {
-        if (instance == null) {
-            instance = new MySqlUserDao();
-        }
-        return instance;
-    }
-
-    private MySqlUserDao(){}
-
     @Override
     public List<User> findAllUsers(Connection connection)  {
         return findAll(connection, FIND_ALL_USERS);

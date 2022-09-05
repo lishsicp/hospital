@@ -4,9 +4,6 @@ import com.yaroslav.lobur.exceptions.InputErrorsMessagesException;
 import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.dao.*;
 import com.yaroslav.lobur.model.entity.Appointment;
-import com.yaroslav.lobur.model.entity.HospitalCard;
-import com.yaroslav.lobur.model.entity.Patient;
-import com.yaroslav.lobur.model.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,19 +14,13 @@ public class AppointmentService {
 
     private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
 
-    private static final UserDao userDao;
-    private static final PatientDao patientDao;
-    private static final HospitalCardDao hospitalCardDao;
-    private static final AppointmentDao appointmentDao;
+    private final DaoFactory daoFactory;
 
-    private static final DaoFactory daoFactory;
+    private final AppointmentDao appointmentDao;
 
-    static {
-        daoFactory = DaoFactory.getDaoFactory();
-        userDao = daoFactory.getUserDao();
-        patientDao = daoFactory.getPatientDao();
-        hospitalCardDao = daoFactory.getHospitalCardDao();
-        appointmentDao = daoFactory.getAppointmentDao();
+    public AppointmentService(DaoFactory daoFactory, AppointmentDao appointmentDao) {
+        this.daoFactory = daoFactory;
+        this.appointmentDao = appointmentDao;
     }
 
     public long createAppointment(Appointment appointment) {
@@ -61,17 +52,16 @@ public class AppointmentService {
         }
     }
 
-    public Appointment getAppointmentByHospitalCard(HospitalCard hospitalCard) {
+    public List<Appointment> getAppointmentByHospitalCardId(long hospitalCardId) {
         Connection con = null;
-        Appointment appointment;
+        List<Appointment> appointments;
         try {
             con = daoFactory.open();
-            appointment = appointmentDao.findAppointmentByHospitalCardId(con, hospitalCard.getId());
-            appointment.setHospitalCard(hospitalCard);
+            appointments = appointmentDao.findAppointmentsByHospitalCardId(con, hospitalCardId);
         } finally {
             daoFactory.close(con);
         }
-        return appointment;
+        return appointments;
     }
 
 
@@ -93,26 +83,6 @@ public class AppointmentService {
         try {
             con = daoFactory.open();
             appointments = appointmentDao.findAppointmentsByType(con, appointmentTypes, offset, noOfRecords);
-            List<HospitalCard> hospitalCards = hospitalCardDao.findAllHospitalCards(con);
-            List<Patient> patients = patientDao.findAllPatients(con);
-            List<User> users = userDao.findAllUsers(con);
-            appointments.forEach(a -> {
-                a.setHospitalCard(hospitalCards
-                                .stream()
-                                .filter(h -> h.getId() == a.getHospitalCard().getId())
-                                .findFirst().orElse(null));
-                a.getHospitalCard().setPatient(patients
-                        .stream()
-                        .filter(p -> p.getId() == a.getHospitalCard().getPatient().getId())
-                        .findFirst()
-                        .orElse(null));
-                if (a.getUser() != null) {
-                    a.setUser(users.stream()
-                            .filter(u -> u.getId() == a.getUser().getId())
-                            .findFirst()
-                            .orElse(null));
-                }
-            });
         } finally {
             daoFactory.close(con);
         }

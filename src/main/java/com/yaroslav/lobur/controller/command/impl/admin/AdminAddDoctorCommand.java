@@ -50,7 +50,7 @@ public class AdminAddDoctorCommand implements Command {
         if (!request.getParameter("psw-repeat").equals(user.getPassword())) {
             errors.put("psw-repeat", "validation.user.password_retype");
         }
-        if (errors.isEmpty()) {
+        if (errors.isEmpty())
             try {
                 user.setPassword(PasswordEncryptor.getSHA1String(user.getPassword()));
                 doctorService.addDoctor(doctor);
@@ -58,15 +58,13 @@ public class AdminAddDoctorCommand implements Command {
                 logger.debug("Validation fail");
                 errors.putAll(e.getErrorMessageMap());
             } catch (UnknownSqlException e) {
-                session.setAttribute("sql", "sql.error");
+                request.setAttribute("sql", "sql.error");
             }
-        }
         if (!errors.isEmpty()) {
-            logger.debug("Doctor is not valid {}", category.getId());
-            session.setAttribute("doctorErrors", errors);
+            logger.debug("Doctor is not valid");
+            request.setAttribute("doctorErrors", errors);
             return new CommandResult(page);
         } else {
-            session.removeAttribute("doctorErrors");
             session.setAttribute("success", "signup.doctor.success");
         }
         return new CommandResult(request.getContextPath() + page, true);

@@ -14,16 +14,17 @@ import rst.pdfbox.layout.elements.render.ColumnLayout;
 import rst.pdfbox.layout.elements.render.VerticalLayoutHint;
 import rst.pdfbox.layout.text.BaseFont;
 import java.io.*;
+import java.util.List;
 import java.util.Objects;
 
 
-public class AppointmentDischargeInfo {
-    public static void createDischargeInfo(Appointment appointment, HttpServletResponse response) throws IOException {
+public class PatientDischargeInfo {
+    public static void createDischargeInfo(List<Appointment> appointments, HttpServletResponse response) throws IOException {
         Document document = new Document();
 
-        PDFont regular = PDType0Font.load(document.getPDDocument(), new FileInputStream(Objects.requireNonNull(AppointmentDischargeInfo.class.getClassLoader().getResource("font/times.ttf")).getFile()));
-        PDFont bold = PDType0Font.load(document.getPDDocument(), new FileInputStream(Objects.requireNonNull(AppointmentDischargeInfo.class.getClassLoader().getResource("font/timesbd.ttf")).getFile()));
-        PDFont italic = PDType0Font.load(document.getPDDocument(), new FileInputStream(Objects.requireNonNull(AppointmentDischargeInfo.class.getClassLoader().getResource("font/timesi.ttf")).getFile()));
+        PDFont regular = PDType0Font.load(document.getPDDocument(), new FileInputStream(Objects.requireNonNull(PatientDischargeInfo.class.getClassLoader().getResource("font/times.ttf")).getFile()));
+        PDFont bold = PDType0Font.load(document.getPDDocument(), new FileInputStream(Objects.requireNonNull(PatientDischargeInfo.class.getClassLoader().getResource("font/timesbd.ttf")).getFile()));
+        PDFont italic = PDType0Font.load(document.getPDDocument(), new FileInputStream(Objects.requireNonNull(PatientDischargeInfo.class.getClassLoader().getResource("font/timesi.ttf")).getFile()));
 
         Paragraph title = new Paragraph();
         title.addMarkup("*Patient Discharge Info*",
@@ -34,9 +35,9 @@ public class AppointmentDischargeInfo {
 
         document.add(new ColumnLayout(2, 20), VerticalLayoutHint.CENTER);
 
-        Patient patient = appointment.getHospitalCard().getPatient();
+        Patient patient = appointments.get(0).getHospitalCard().getPatient();
         Doctor doctor = patient.getDoctor();
-        User executor = appointment.getUser();
+        User executor = appointments.get(0).getUser();
 
         Paragraph paragraph1 = new Paragraph();
         paragraph1.setLineSpacing(1.5f);
@@ -51,6 +52,8 @@ public class AppointmentDischargeInfo {
         paragraph1.addText(String.format("Name: %s %s%n", doctor.getUser().getFirstname(), doctor.getUser().getLastname()), 14, regular);
         paragraph1.addText(String.format("Email: %s%n", doctor.getUser().getEmail()), 14, regular);
         paragraph1.addText(String.format("Phone: %s%n", doctor.getUser().getPhone()), 14, regular);
+        paragraph1.addText("\n", 14, regular);
+        paragraph1.addText(String.format("Diagnosis: %s%n", appointments.get(0).getHospitalCard().getDiagnosis()), 16, bold);
 
         document.add(paragraph1, VerticalLayoutHint.CENTER);
         document.add(ColumnLayout.NEWCOLUMN);
@@ -58,13 +61,14 @@ public class AppointmentDischargeInfo {
         Paragraph paragraph2 = new Paragraph();
         paragraph2.setLineSpacing(1.5f);
         paragraph2.addText("Treatment Details\n", 16, italic);
-        paragraph2.addText(String.format("Description: %s%n", appointment.getTitle()), 14, regular);
-        paragraph2.addText(String.format("Type: %s%n", appointment.getType().name().toLowerCase()), 14, regular);
-        paragraph2.addText(String.format("Treatment started: %s%n", appointment.getStartDate().toString()), 14, regular);
-        paragraph2.addText(String.format("Treatment ended: %s%n", appointment.getEndDate().toString()), 14, regular);
-        paragraph2.addText(String.format("Appointment made by : %s %s %s%n", executor.getFirstname(), executor.getLastname(), executor.getRole().name().toLowerCase()), 14, regular);
-        paragraph2.addText("\n", 14, regular);
-        paragraph2.addText(String.format("Diagnosis: %s%n", appointment.getHospitalCard().getDiagnosis()), 18, bold);
+        for (Appointment appointment : appointments) {
+            paragraph2.addText(String.format("Description: %s%n", appointment.getTitle()), 14, regular);
+            paragraph2.addText(String.format("Type: %s%n", appointment.getType().name().toLowerCase()), 14, regular);
+            paragraph2.addText(String.format("Treatment started: %s%n", appointment.getStartDate().toString()), 14, regular);
+            paragraph2.addText(String.format("Treatment ended: %s%n", appointment.getEndDate().toString()), 14, regular);
+            paragraph2.addText(String.format("Appointment made by : %s %s %s%n", executor.getFirstname(), executor.getLastname(), executor.getRole().name().toLowerCase()), 14, regular);
+            paragraph2.addText("\n", 14, regular);
+        }
         document.add(paragraph2, VerticalLayoutHint.CENTER);
         document.save(response.getOutputStream());
     }

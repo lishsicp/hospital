@@ -1,7 +1,6 @@
 package com.yaroslav.lobur.model.dao;
 
 import com.yaroslav.lobur.exceptions.UnknownSqlException;
-import com.yaroslav.lobur.model.dao.impl.MySqlDaoFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -9,19 +8,10 @@ import java.sql.SQLException;
 
 public abstract class DaoFactory {
 
-    protected static DataSource ds;
+    protected DataSource ds;
 
-    private static DaoFactory instance;
-
-    public static DaoFactory getDaoFactory() {
-        if (instance == null) {
-            instance = MySqlDaoFactory.getInstance();
-        }
-        return instance;
-    }
-
-    public static void init(DataSource ds) {
-        DaoFactory.ds = ds;
+    protected DaoFactory(DataSource dataSource) {
+        this.ds = dataSource;
     }
 
     public abstract UserDao getUserDao();

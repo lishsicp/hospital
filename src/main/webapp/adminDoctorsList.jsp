@@ -33,7 +33,7 @@
                     </select>
                 </div>
                 <div class="col-2">
-                    <label for="recordsPerPage">Items per page:</label>
+                    <label for="recordsPerPage"><fmt:message key="items.per.page"/></label>
                     <input type="number" name="recordsPerPage" id="recordsPerPage" oninput="submit()" value="${recordsPerPage}">
                 </div>
             </form>
@@ -98,6 +98,11 @@
                     </c:if>
                 </ul>
             </nav>
+            <c:if test="${sql ne null}">
+                <div class="text-danger" id="sql">
+                    <fmt:message key="${sql}"/>
+                </div>
+            </c:if>
         </div>
     </div>
 </div>

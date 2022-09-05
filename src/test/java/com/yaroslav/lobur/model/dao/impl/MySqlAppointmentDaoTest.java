@@ -20,20 +20,17 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MySqlAppointmentDaoTest {
 
-    static DaoFactory daoFactory;
-    static AppointmentDao appointmentDao;
+    DaoFactory daoFactory = new MySqlDaoFactory(MySqlDatasource.getDataSource());
+    AppointmentDao appointmentDao = daoFactory.getAppointmentDao();
 
     @BeforeAll
     static void setUp() throws SQLException, FileNotFoundException {
-        DaoFactory.init(MySqlDatasource.getDataSource());
-        daoFactory = DaoFactory.getDaoFactory();
-        appointmentDao = daoFactory.getAppointmentDao();
         MySqlDatasource.resetDatabase();
     }
 
     @Test
     @Order(1)
-    void insertAppointment() throws SQLException {
+    void testInsertAppointment() throws SQLException {
         try (Connection con = daoFactory.open()) {
             Appointment appointment = appointmentDao.findAppointmentById(con, 1);
             appointment.setStatus(AppointmentStatus.ONGOING);
@@ -45,7 +42,7 @@ class MySqlAppointmentDaoTest {
 
     @Test
     @Order(2)
-    void updateAppointment() throws SQLException {
+    void testUpdateAppointment() throws SQLException {
         try (Connection con = daoFactory.open()) {
             Appointment appointment = appointmentDao.findAppointmentById(con, 4);
             appointment.setStatus(AppointmentStatus.DONE);
@@ -55,14 +52,14 @@ class MySqlAppointmentDaoTest {
     }
 
     @Test
-    void findAppointmentByHospitalCardId() throws SQLException {
+    void testFindAppointmentByHospitalCardId() throws SQLException {
         try (Connection con = daoFactory.open()) {
-            assertThrows(EntityNotFoundException.class, () -> appointmentDao.findAppointmentByHospitalCardId(con, 555));
+            assertEquals(0, appointmentDao.findAppointmentsByHospitalCardId(con, 555).size());
         }
     }
 
     @Test
-    void findAppointmentById() throws SQLException {
+    void testFindAppointmentById() throws SQLException {
         try (Connection con = daoFactory.open()) {
             assertThrows(EntityNotFoundException.class, () -> appointmentDao.findAppointmentById(con, 555));
         }
@@ -70,7 +67,7 @@ class MySqlAppointmentDaoTest {
 
     @Test
     @Order(3)
-    void findAppointmentsByType() throws SQLException {
+    void testFindAppointmentsByType() throws SQLException {
         try (Connection con = daoFactory.open()) {
             List<Appointment> appointments = appointmentDao.findAppointmentsByType(con, Arrays.asList(AppointmentType.MEDICATION.name(), null, null), 0, 5);
             assertEquals(2, appointments.size());

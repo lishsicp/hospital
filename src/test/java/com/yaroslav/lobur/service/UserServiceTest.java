@@ -3,82 +3,99 @@ package com.yaroslav.lobur.service;
 import com.yaroslav.lobur.exceptions.DBExceptionMessages;
 import com.yaroslav.lobur.exceptions.EntityNotFoundException;
 import com.yaroslav.lobur.exceptions.InputErrorsMessagesException;
+import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.dao.DaoFactory;
-import com.yaroslav.lobur.model.entity.Patient;
+import com.yaroslav.lobur.model.dao.UserDao;
 import com.yaroslav.lobur.model.entity.User;
 import com.yaroslav.lobur.model.entity.enums.Role;
 import com.yaroslav.lobur.utils.PasswordEncryptor;
-import com.yaroslav.lobur.validator.UserValidator;
-import db.MySqlDatasource;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import java.io.FileNotFoundException;
-import java.sql.SQLException;
+import java.sql.Connection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+import static org.mockito.Mockito.*;
 class UserServiceTest {
 
-    private static UserService userService;
+    @Mock
+    DaoFactory mockDaoFactory;
+    @Mock
+    Connection mockConn;
+    @Mock
+    UserDao mockUserDao;
+    @InjectMocks
+    UserService userService;
 
-    @BeforeAll
-    static void setUp() throws SQLException, FileNotFoundException {
-        DaoFactory.init(MySqlDatasource.getDataSource());
-        userService = new UserService();
-        MySqlDatasource.resetDatabase();
+    User user;
+
+    @BeforeEach
+    public void setUp() throws Exception{
+        try(var ignored = MockitoAnnotations.openMocks(this)) {
+            when(mockDaoFactory.open()).thenReturn(mockConn);
+            when(mockDaoFactory.beginTransaction()).thenReturn(mockConn);
+            doNothing().when(mockDaoFactory).commit(mockConn);
+            doNothing().when(mockDaoFactory).rollback(mockConn);
+            doNothing().when(mockDaoFactory).close(mockConn);
+            user = new User();
+            user.setId(1);
+            user.setPassword(PasswordEncryptor.getSHA1String("password"));
+            user.setFirstname("Name");
+            user.setLastname("Surname");
+            user.setEmail("email");
+        }
     }
 
     @Test
-    @Order(1)
-    void registerUser() {
-        User user = userService.getUserById(1);
-        user.setId(0);
-        user.setPassword("Password1");
-        assertEquals(0, UserValidator.getInstance().validate(user).size());
-        assertEquals(8, UserValidator.getInstance().validate(new User()).size());
-        user.setPassword(PasswordEncryptor.getSHA1String(user.getPassword()));
+    void testRegisterUserWithNoExceptions() {
+        when(mockUserDao.insertUser(mockDaoFactory.beginTransaction(), user)).thenReturn(user.getId());
+        assertEquals(user.getId(), userService.registerUser(user));
+    }
+
+    @Test
+    void testRegisterUserWithExceptions() {
+        doThrow(InputErrorsMessagesException.class).when(mockUserDao).checkUniqueFields(mockConn, user);
+        when(mockUserDao.insertUser(mockDaoFactory.open(), user)).thenReturn(1L);
         assertThrows(InputErrorsMessagesException.class, () -> userService.registerUser(user));
-        user.setPhone("(000)-000-00-00");
-        user.setEmail("test@gg.com");
-        user.setLogin("test");
-        long id = userService.registerUser(user);
-        User user1 = userService.getUserById(id);
-        user.setId(id);
-        assertEquals(user, user1);
+        doNothing().when(mockDaoFactory).close(mockConn);
     }
 
     @Test
-    @Order(2)
-    void signIn() {
-        User user = userService.getUserById(1);
-        user.setPassword("Password1");
-        long id = userService.signIn(user.getEmail(), user.getPassword());
-        assertEquals(user.getId(), id);
-        user.setPassword("WrongPassword1");
-        assertThrows(DBExceptionMessages.class, () -> userService.signIn(user.getEmail(), user.getPassword()));
-        user.setPassword("Password1");
-        user.setEmail("notRegistered@email.com");
-        assertThrows(DBExceptionMessages.class, () -> userService.signIn(user.getEmail(), user.getPassword()));
+    void testSignInWithoutExceptions() {
+        when(mockUserDao.findUserByEmail(mockDaoFactory.open(), "email")).thenReturn(user);
+        assertEquals(user.getId(), userService.signIn("email", "password"));
     }
 
     @Test
-    @Order(3)
-    void getUserById() {
-        User user = new User();
-        user.setId(6);
-        user.setEmail("test@gg.com");
-        assertThrows(EntityNotFoundException.class, () ->  userService.getUserById(27));
-        assertEquals(user.getEmail(), userService.getUserById(user.getId()).getEmail());
-        assertEquals(user.getId(), userService.getUserById(user.getId()).getId());
+    void testSignInWithExceptions() {
+        when(mockUserDao.findUserByEmail(mockDaoFactory.open(), "wrong_email")).thenThrow(EntityNotFoundException.class);
+        assertThrows(DBExceptionMessages.class, () -> userService.signIn("wrong_email", "password"));
+        when(mockUserDao.findUserByEmail(mockDaoFactory.open(), "wrong_email2")).thenThrow(UnknownSqlException.class);
+        assertThrows(UnknownSqlException.class, () -> userService.signIn("wrong_email2", "password"));
+        when(mockUserDao.findUserByEmail(mockDaoFactory.open(), "email")).thenReturn(user);
+        assertThrows(DBExceptionMessages.class, () -> userService.signIn("email", "wrong_password"));
     }
 
     @Test
-    @Order(4)
-    void getUsersByRole() {
-        List<User> users = userService.getUsersByRole(Role.DOCTOR);
-        long c = users.stream().filter(u -> u.getRole().getRoleId() == 2).count();
-        assertEquals(users.size(), c);
+    void testGetUserById() {
+        when(mockUserDao.findUserById(mockDaoFactory.open(), user.getId())).thenReturn(user);
+        assertEquals(user, userService.getUserById(user.getId()));
+        doNothing().when(mockDaoFactory).close(mockConn);
+    }
+
+    @Test
+    void testGetUsersByRole() {
+        User user1 = new User();
+        User user2 = new User();
+        user1.setRole(Role.DOCTOR);
+        user2.setRole(Role.ADMIN);
+        List<User> users = List.of(user1, user2);
+        when(mockUserDao.findAllByRole(mockDaoFactory.open(), Role.DOCTOR)).thenReturn(users);
+        assertEquals(users.get(0), userService.getUsersByRole(Role.DOCTOR).get(0));
+        doNothing().when(mockDaoFactory).close(mockConn);
     }
 }
