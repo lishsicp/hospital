@@ -84,6 +84,20 @@ public class DoctorService {
         }
     }
 
+    public void addCategory(Category category) {
+        Connection connection = null;
+        try {
+            connection = daoFactory.beginTransaction();
+            categoryDao.insertCategory(connection, category);
+            daoFactory.commit(connection);
+        } catch (InputErrorsMessagesException | UnknownSqlException e) {
+            daoFactory.rollback(connection);
+            throw e;
+        } finally {
+            daoFactory.endTransaction(connection);
+        }
+    }
+
     public Doctor getDoctorByUser(User user) {
         Connection con = null;
         try {

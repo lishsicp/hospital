@@ -71,6 +71,7 @@ class MySqlAppointmentDaoTest {
         try (Connection con = daoFactory.open()) {
             List<Appointment> appointments = appointmentDao.findAppointmentsByType(con, Arrays.asList(AppointmentType.MEDICATION.name(), null, null), 0, 5);
             assertEquals(2, appointments.size());
+            assertEquals(appointmentDao.getNumberOfRecords(), appointments.size());
         }
     }
 }

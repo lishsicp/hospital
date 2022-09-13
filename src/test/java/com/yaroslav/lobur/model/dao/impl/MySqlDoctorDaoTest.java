@@ -63,6 +63,9 @@ class MySqlDoctorDaoTest {
     void testFindDoctorById() throws SQLException {
         try (Connection con = daoFactory.open()) {
             assertThrows(EntityNotFoundException.class, () -> doctorDao.findDoctorById(con, 1000));
+            Doctor doctor = doctorDao.findDoctorById(con, 1);
+            assertEquals(doctor, doctorDao.findDoctorById(con, 1));
+            assertEquals(doctor.toString(), doctorDao.findDoctorById(con, 1).toString());
         }
     }
 

@@ -8,4 +8,5 @@ import java.util.List;
 public interface CategoryDao {
     List<Category> findAllCategories(Connection connection);
     Category findCategoryById(Connection connection, long id);
+    long insertCategory(Connection connection, Category category);
 }

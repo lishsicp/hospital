@@ -57,8 +57,8 @@
                     <th scope="col"><fmt:message key="signup.email"/></th>
                     <th scope="col"><fmt:message key="patient.list.status"/></th>
                     <th scope="col"><fmt:message key="patient.list.doctor"/></th>
-                    <th></th>
-                    <th></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -95,8 +95,15 @@
                                                         <option selected disabled value=""><fmt:message
                                                                 key="signup.chose.category"/></option>
                                                         <c:forEach var="c" items="${sessionScope.categories}">
-                                                            <option value="${c.id}"><fmt:message
-                                                                    key="signup.category.${c.name}"/></option>
+                                                            <ctg:checkKey key="signup.category.${c.name}"/>
+                                                            <c:choose>
+                                                                <c:when test="${pageScope.contains eq 'true'}">
+                                                                    <option value="${c.id}"><fmt:message key="signup.category.${c.name}"/></option>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <option value="${c.id}">${c.name}</option>
+                                                                </c:otherwise>
+                                                            </c:choose>
                                                         </c:forEach>
                                                     </select>
                                                 </div>

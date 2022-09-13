@@ -6,7 +6,6 @@ import jakarta.servlet.jsp.tagext.SimpleTagSupport;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 public class DateFormatterTag extends SimpleTagSupport {
 

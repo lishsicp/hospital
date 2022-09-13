@@ -3,6 +3,7 @@ package com.yaroslav.lobur.validator;
 import com.yaroslav.lobur.model.entity.Appointment;
 import com.yaroslav.lobur.utils.managers.RegexpManager;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class AppointmentValidator implements Validator<Appointment> {
@@ -21,7 +22,7 @@ public class AppointmentValidator implements Validator<Appointment> {
 
     @Override
     public Map<String, String> validate(Appointment entity) {
-        var errors = HospitalCardValidator.getInstance().validate(entity.getHospitalCard());
+        Map<String, String> errors = new HashMap<>();
         if (entity.getTitle() == null || !entity.getTitle().matches(RegexpManager.getProperty("appointment.title"))) {
             errors.put("description", "validation.appointment.desc");
         }

@@ -4,15 +4,11 @@ import com.yaroslav.lobur.exceptions.InputErrorsMessagesException;
 import com.yaroslav.lobur.exceptions.UnknownSqlException;
 import com.yaroslav.lobur.model.dao.*;
 import com.yaroslav.lobur.model.entity.Appointment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.util.List;
 
 public class AppointmentService {
-
-    private static final Logger logger = LoggerFactory.getLogger(AppointmentService.class);
 
     private final DaoFactory daoFactory;
 

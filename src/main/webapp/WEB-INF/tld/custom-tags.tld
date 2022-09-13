@@ -35,6 +35,17 @@
             <type>java.util.Date</type>
         </attribute>
     </tag>
+    <tag>
+        <name>checkKey</name>
+        <tag-class>com.yaroslav.lobur.tags.CheckBundleKeyTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+    </tag>
     <tag-file>
         <description>Set session "language" parameter for fmt</description>
         <name>setLang</name>

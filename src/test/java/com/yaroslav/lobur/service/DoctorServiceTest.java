@@ -52,6 +52,7 @@ class DoctorServiceTest {
             doctor.setId(1);
             category = new Category();
             category.setId(1);
+            category.setName("test");
             user = new User();
             user.setId(1);
             doctor.setUser(user);
@@ -120,5 +121,23 @@ class DoctorServiceTest {
     void testGetDoctorByUser() {
         when(mockDoctorDao.findDoctorByUserId(mockDaoFactory.open(), user.getId())).thenReturn(doctor);
         assertEquals(doctor, doctorService.getDoctorByUser(user));
+    }
+
+    @Test
+    void testInsertCategoryWithNoExceptions() throws SQLException {
+        try (Connection connection = mockDaoFactory.beginTransaction()) {
+            when(mockCategoryDao.insertCategory(connection, category)).thenReturn(category.getId());
+            assertDoesNotThrow(() -> doctorService.addCategory(category));
+        }
+    }
+
+    @Test
+    void testInsertCategoryWithExceptions() throws SQLException {
+        try (Connection connection = mockDaoFactory.beginTransaction()) {
+            doThrow(InputErrorsMessagesException.class).when(mockCategoryDao).insertCategory(connection, category);
+            assertThrows(InputErrorsMessagesException.class,() -> doctorService.addCategory(category));
+            doThrow(UnknownSqlException.class).when(mockCategoryDao).insertCategory(connection, category);
+            assertThrows(UnknownSqlException.class,() -> doctorService.addCategory(category));
+        }
     }
 }

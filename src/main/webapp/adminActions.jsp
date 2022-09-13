@@ -8,6 +8,7 @@
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="${pageContext.request.contextPath}/controller?action=list_doctors"><fmt:message key="admin.doctor.list"/></a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="${pageContext.request.contextPath}/controller?action=add_patient"><fmt:message key="admin.patient.add"/></a>
         <a class="list-group-item list-group-item-action list-group-item-light p-3" href="${pageContext.request.contextPath}/controller?action=add_doctor"><fmt:message key="admin.doctor.add"/></a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="${pageContext.request.contextPath}/controller?action=add_category"><fmt:message key="admin.category.add"/></a>
     </div>
 </div>
 <script>

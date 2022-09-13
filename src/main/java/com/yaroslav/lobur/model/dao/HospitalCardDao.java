@@ -1,8 +1,6 @@
 package com.yaroslav.lobur.model.dao;
 
 import com.yaroslav.lobur.model.entity.HospitalCard;
-import com.yaroslav.lobur.model.entity.Patient;
-import com.yaroslav.lobur.model.entity.enums.OrderBy;
 
 import java.sql.Connection;
 import java.util.List;

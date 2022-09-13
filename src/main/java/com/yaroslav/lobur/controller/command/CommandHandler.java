@@ -30,6 +30,7 @@ public class CommandHandler {
         commandMap.put("list_doctors", new ListDoctorsCommand());
         commandMap.put("add_patient", new AdminAddPatientCommand());
         commandMap.put("add_doctor", new AdminAddDoctorCommand());
+        commandMap.put("add_category", new AdminAddCategoryCommand());
         commandMap.put("delete_patient", new DeletePatientCommand());
         commandMap.put("edit_patient", new EditPatientCommand());
         commandMap.put("doctors_by_category", new DoctorsByCategory());

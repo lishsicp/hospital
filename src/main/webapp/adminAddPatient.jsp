@@ -68,7 +68,7 @@
                                 <button type="submit" class="btn btn-outline-dark"><fmt:message key="admin.patient.add"/></button>
                             </div>
                         </div>
-                        <c:if test="${requestScope.success != null}">
+                        <c:if test="${sessionScope.success != null}">
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 <strong><fmt:message key="${sessionScope.success}" /></strong>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>

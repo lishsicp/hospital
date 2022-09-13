@@ -12,14 +12,6 @@
     <title>Assign patient</title>
 </head>
 <body>
-<div class="d-flex" id="wrapper">
-    <%-- Page actions --%>
-    <c:import url="adminActions.jsp"/>
-    <%-- Page content wrapper--%>
-    <div id="page-content-wrapper">
-        <%-- Top navigation--%>
-        <c:import url="topnav.jsp"/>
-        <%--Page Content--%>
         <div class="d-flex" id="wrapper">
             <%-- Page actions --%>
             <c:import url="adminActions.jsp"/>
@@ -45,7 +37,7 @@
                         <div class="col-2">
                             <label for="recordsPerPage">Items per page:</label>
                             <input type="number" name="recordsPerPage" id="recordsPerPage" oninput="submit()"
-                                   value="${recordsPerPage}">
+                                   value="${sessionScope.recordsPerPage}">
                         </div>
                     </form>
 
@@ -60,8 +52,8 @@
                             <th scope="col"><fmt:message key="signup.email"/></th>
                             <th scope="col"><fmt:message key="patient.list.status"/></th>
                             <th scope="col"><fmt:message key="patient.list.doctor"/></th>
-                            <th></th>
-                            <th></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -91,7 +83,7 @@
                                                 </c:otherwise>
                                             </c:choose>
                                         </th>
-                                        <th>
+                                        <th scope="col">
                                             <form action="${pageContext.request.contextPath}/controller" method="post">
                                                 <input class="btn btn-outline-danger btn-sm" type="submit"
                                                        value="Delete"/>
@@ -99,7 +91,7 @@
                                                 <input type="hidden" name="patientId" value="${p.id}"/>
                                             </form>
                                         </th>
-                                        <th>
+                                        <th scope="col">
                                             <!-- Button trigger modal -->
                                             <button type="button" class="btn btn-outline-primary btn-sm"
                                                     data-bs-toggle="modal"
@@ -222,7 +214,6 @@
             </div>
             <c:import url="scripts.jsp"/>
         </div>
-    </div>
     <c:import url="scripts.jsp"/>
 </body>
 </html>

@@ -22,8 +22,7 @@ public class MySqlCategoryDao extends GenericDao<Category> implements CategoryDa
 
     @Override
     protected void mapFromEntity(PreparedStatement ps, Category category) throws SQLException {
-        ps.setLong(1, category.getId());
-        ps.setString(2, category.getName());
+        ps.setString(1, category.getName());
     }
 
     public List<Category> findAllCategories(Connection connection) {
@@ -32,6 +31,10 @@ public class MySqlCategoryDao extends GenericDao<Category> implements CategoryDa
 
     public Category findCategoryById(Connection connection, long id) {
         return findEntity(connection, "SELECT * FROM category WHERE id=?", id);
+    }
+
+    public long insertCategory(Connection connection, Category category) {
+        return insertEntity(connection, "INSERT INTO category (category) VALUES (?)\n", category);
     }
 
 }

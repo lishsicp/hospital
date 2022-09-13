@@ -1,9 +1,9 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ctg" uri="custom_tags" %>
 
-
-<html lang="${language}">
+<!DOCTYPE html>
+<html lang="${sessionScope.language}">
 <head>
     <c:import url="meta.jsp"/>
     <title>Hospital</title>

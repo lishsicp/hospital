@@ -9,7 +9,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
     <div class="container-fluid">
-        <c:if test="${current_user ne null}">
+        <c:if test="${sessionScope.current_user ne null}">
             <button class="btn" id="sidebarToggle" data-bs-toggle="tooltip" data-bs-placement="bottom"
                     title="<fmt:message key="header.toggle.tooltip"/>"><h3 style="margin-bottom: 0;"><i id="menuToggle" class="bi bi-toggle-on"></i></h3>
             </button>
@@ -18,7 +18,7 @@
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
                     class="navbar-toggler-icon"></span></button>
         </c:if>
-        <c:if test="${current_user eq null}">
+        <c:if test="${sessionScope.current_user eq null}">
             <h3 class=""><fmt:message key="header.name"/> </h3>
         </c:if>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -35,14 +35,12 @@
                         </select>
                     </form>
                 </li>
-<%--                <li class="nav-item"><a class="nav-link" href="#!">Home</a></li>--%>
-                <c:if test="${current_user ne null}">
+                <c:if test="${sessionScope.current_user ne null}">
                     <li class="nav-item h-100 dropdown">
                         <a class="nav-link dropdown-toggle" style="margin-bottom: 0;" id="navbarDropdown" href="#" role="button"
-                           data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">${current_user.email}</a>
+                           data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">${sessionScope.current_user.email}</a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" href="${pageContext.request.contextPath}/controller?action=view_user"><fmt:message key="profile"/></a>
-<%--                            <a class="dropdown-item" href="#!">Another action</a>--%>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="${pageContext.request.contextPath}/controller?action=logout"><fmt:message
                                     key="header.logout"/></a>

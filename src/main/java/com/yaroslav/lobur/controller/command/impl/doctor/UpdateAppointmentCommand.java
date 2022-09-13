@@ -8,7 +8,6 @@ import com.yaroslav.lobur.model.entity.Appointment;
 import com.yaroslav.lobur.model.entity.enums.AppointmentStatus;
 import com.yaroslav.lobur.model.entity.enums.AppointmentType;
 import com.yaroslav.lobur.service.AppointmentService;
-import com.yaroslav.lobur.service.PatientService;
 import com.yaroslav.lobur.utils.CommandResult;
 import com.yaroslav.lobur.utils.managers.PagePathManager;
 import com.yaroslav.lobur.validator.AppointmentValidator;
